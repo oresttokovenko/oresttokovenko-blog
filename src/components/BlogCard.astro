@@ -1,31 +1,41 @@
 ---
-import * as Icons from 'react-icons/si';
+import * as Icons from 'react-icons/si'
 
 interface Logo {
-    logoName: keyof typeof Icons
-    logoSize: number;
+  logoName: keyof typeof Icons
+  logoSize: number
 }
 
 interface Props {
-	BlogTitle: string;
-	BlogDescription: string;
-    Route: string;
-    Logos: Logo[];
+  BlogTitle: string
+  BlogDescription: string
+  Route: string
+  Logos: Logo[]
 }
 
-const { BlogTitle, BlogDescription, Route, Logos } = Astro.props;
+const { BlogTitle, BlogDescription, Route, Logos } = Astro.props
 ---
 
-<article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md">
-    <div class="flex justify-between items-center mb-5 text-gray-500">
-        <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded">
-           <!-- mapping each logo in the Logos array to its corresponding icon component, setting the icon size and wrapping it in a span with margins -->
-            {Logos.map((logo) => {
-              const IconComponent = Icons[logo.logoName];
-                return <span class="mr-2"><IconComponent size={logo.logoSize} /></span>;
-            })}
-        </span>
-    </div>
-    <h2 class="mb-2 text-2xl font-bold tracking-tight text-black"><a href={Route}>{BlogTitle}</a></h2>
-    <p class="mb-5 font-light text-gray-500"> {BlogDescription}</p>
-</article> 
+<article class='p-6 bg-white rounded-lg border border-gray-200 shadow-md'>
+  <div class='flex justify-between items-center mb-5 text-gray-500'>
+    <span
+      class='bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded'
+    >
+      <!-- mapping each logo in the Logos array to its corresponding icon component, setting the icon size and wrapping it in a span with margins -->
+      {
+        Logos.map((logo) => {
+          const IconComponent = Icons[logo.logoName]
+          return (
+            <span class='mr-2'>
+              <IconComponent size={logo.logoSize} />
+            </span>
+          )
+        })
+      }
+    </span>
+  </div>
+  <h2 class='mb-2 text-2xl font-bold tracking-tight text-black'>
+    <a href={Route}>{BlogTitle}</a>
+  </h2>
+  <p class='mb-5 font-light text-gray-500'>{BlogDescription}</p>
+</article>

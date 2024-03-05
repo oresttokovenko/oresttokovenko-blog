@@ -1,13 +1,15 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Background from "../layouts/Background.astro";
-const { sadEmoji = "\u{1FAE0}" } = Astro.props;
+import Layout from '../layouts/Layout.astro'
+import Background from '../layouts/Background.astro'
+const { sadEmoji = '\u{1FAE0}' } = Astro.props
 ---
 
-<Layout title="Page not Found">
-  <div class="flex flex-col items-center justify-center min-h-screen pl-16 space-y-4">
-    <Background></Background>
-    <h1 class="text-black font-bold text-6xl text-center z-10">
+<Layout title='Page not Found'>
+  <div
+    class='flex flex-col items-center justify-center min-h-screen pl-16 space-y-4'
+  >
+    <Background />
+    <h1 class='text-black font-bold text-6xl text-center z-10'>
       Page not Found {sadEmoji}
     </h1>
   </div>
