@@ -1,0 +1,10 @@
+---
+const { frontmatter } = Astro.props
+
+const { title, pubDate, heroImage } = frontmatter;
+---
+
+<h1>{title}</h1>
+<p>{pubDate}</p>
+<img src={heroImage} alt={`Image for ${title}`} />
+<slot />
