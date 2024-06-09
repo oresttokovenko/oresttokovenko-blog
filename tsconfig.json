@@ -4,29 +4,11 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "es6",
-    "baseUrl": "/Users/oresttokovenko/Documents/oresttokovenko-blog",
-    "paths": {
-      "@fonts/*": [
-        "public/fonts/*"
-      ],
-      "@posts/*": [
-        "src/content/posts/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ]
-    },
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
   "include": [
     "**/*.ts",
     "**/*.astro"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }
