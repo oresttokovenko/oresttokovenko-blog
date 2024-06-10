@@ -1,8 +1,9 @@
 ---
-import * as Icons from 'react-icons/si'
+import * as SiIcons from 'react-icons/si';
+import * as TbIcons from 'react-icons/tb';
 
 interface Logo {
-  logoName: keyof typeof Icons
+  logoName: keyof typeof SiIcons | keyof typeof TbIcons;
   logoSize: number
 }
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const { BlogTitle, BlogDescription, Route, Logos } = Astro.props
+const Icons = { ...SiIcons, ...TbIcons };
 ---
 
 <article class='p-6 bg-white rounded-lg border border-gray-200 shadow-md'>
