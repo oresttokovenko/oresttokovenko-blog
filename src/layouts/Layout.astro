@@ -1,32 +1,38 @@
 ---
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import '../styles/global.css';
-import { ViewTransitions } from 'astro:transitions';
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import '../styles/global.css'
+import { ViewTransitions } from 'astro:transitions'
 
 interface Props {
-	title: string;
+  title: string
 }
 
-const { title } = Astro.props;
+const { title } = Astro.props
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<ViewTransitions/>
-	</head>
-	<body class="flex flex-col min-h-screen">
-	<Header />
-	<main class="flex-1">
-		<slot />
-	</main>
-	<Footer />
-    </body>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='description' content='Astro description' />
+    <meta name='viewport' content='width=device-width' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.ico' />
+    <meta name='generator' content={Astro.generator} />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+  <body class='h-screen w-screen relative'>
+    <div class='absolute top-0 z-20 w-full'>
+      <Header />
+    </div>
+    <div class='h-full w-full overflow-auto'>
+      <main class='flex-1'>
+        <slot />
+      </main>
+    </div>
+    <div class='absolute bottom-0 w-full'>
+      <Footer />
+    </div>
+  </body>
 </html>
