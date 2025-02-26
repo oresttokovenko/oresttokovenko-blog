@@ -1,45 +1,84 @@
+@import "tailwindcss";
+
 /* setting highlight colour to violet and highlighted text to white */
 ::selection {
-    background: #7c3aed;
-    color: white;
-  }
-
-@font-face {
-  font-family: 'SFMono';
-  src: url('/fonts/SF-Mono-Regular.otf') format('otf');
-  font-weight: 400;
-  font-style: normal;
+  background: #7c3aed;
+  color: white;
 }
 
 @font-face {
-  font-family: 'SFProDisplay';
-  src: url('/fonts/SF-Pro-Display-Heavy.otf') format('otf');
-  font-weight: 600;
-  font-style: bold;
+  font-family: "SFMono";
+  src: url("/fonts/SF-Mono-Regular.otf") format("opentype");
 }
 
 @font-face {
-  font-family: 'SFProText';
-  src: url('/fonts/SF-Pro-Text-Regular.otf') format('otf');
-  font-weight: 400;
-  font-style: normal;
+  font-family: "SFProDisplay";
+  src: url("/fonts/SF-Pro-Display-Heavy.otf") format("opentype");
 }
 
 @font-face {
-  font-family: 'SFPro';
-  src: url('/fonts/SF-Pro.ttf') format('otf');
-  font-weight: 400;
-  font-style: normal;
+  font-family: "SFProText";
+  src: url("/fonts/SF-Pro-Text-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "SFProSemibold";
+  src: url("/fonts/SF-Pro-Display-Semibold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "SFPro";
+  src: url("/fonts/SF-Pro.ttf") format("truetype");
 }
 
 body {
-  font-family: 'SFPro', sans-serif;
+  font-family: "SFPro", sans-serif;
 }
 
 code {
-  font-family: 'SFMono', monospace;
+  font-family: "SFMono", monospace;
 }
 
 h1 {
-  font-family: 'SFProDisplay', sans-serif;
+  font-family: "SFProSemibold", sans-serif;
 }
+
+/* Animating mobile emoji logic  */
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: rotate(25deg) translateX(5px);
+  }
+  50% {
+    transform: rotate(0deg) translateX(0);
+  }
+  75% {
+    transform: rotate(25deg) translateX(5px);
+  }
+}
+
+.animate-wave {
+  animation: wave 0.5s ease-in-out 3;
+  animation-delay: 0.5s;
+  transform-origin: 70% 70%;
+}
+
+/* Banner related logic  */
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  
+  /* Adjust any full-height sections to account for the banner */
+  section[class*="min-h-screen"],
+  div[class*="min-h-screen"] {
+    min-height: calc(100vh - var(--banner-height));
+  }
+  
+  :root {
+    --banner-height: 40px; /* Adjust based on actual measurement */
+  }

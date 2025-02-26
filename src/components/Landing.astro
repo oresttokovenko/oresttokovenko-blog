@@ -1,0 +1,43 @@
+---
+const waveEmoji = "👋";
+---
+
+<!-- 
+Screen Size Responsiveness Explanation:
+- Mobile (default): Text is center-aligned with larger emoji (text-6xl) between phrases
+- Medium (md): Text becomes left-aligned with animated emoji next to "Orest" (text-5xl)
+- Large (lg): Text size increases (text-7xl) with forced line breaks to maintain 3 distinct lines
+-->
+<section class="relative min-h-screen w-full overflow-hidden">
+  <!-- Background with radial dots -->
+  <div
+    class="absolute h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"
+  >
+  </div>
+
+  <!-- Centered content -->
+  <div
+    class="relative z-10 flex flex-col items-center justify-center min-h-screen"
+  >
+    <div class="text-center md:text-left max-w-2xl lg:max-w-7xl">
+      <h1 class="text-4xl md:text-6xl lg:text-7xl group relative">
+        Hello, my name is Orest
+        <!-- Desktop/tablet emoji - only visible on md screens and up -->
+        <span
+          class="absolute transition-all duration-300 group-hover:rotate-[60deg] group-hover:translate-x-6 group-hover:-translate-y-4 p-2 hidden md:inline-block"
+          >{waveEmoji}
+        </span>
+      </h1>
+
+      <!-- Mobile emoji - explicitly visible only on small screens -->
+      <div class="block text-center my-6 md:hidden">
+        <span class="text-6xl inline-block animate-wave">{waveEmoji}</span>
+      </div>
+
+      <h1 class="text-4xl md:text-6xl lg:text-7xl">
+        I craft solutions through data<br class="hidden lg:block" />
+        and software engineering
+      </h1>
+    </div>
+  </div>
+</section>

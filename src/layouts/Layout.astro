@@ -1,38 +1,26 @@
 ---
-import Header from '../components/Header.astro'
-import Footer from '../components/Footer.astro'
-import '../styles/global.css'
-import { ViewTransitions } from 'astro:transitions'
+import './src/styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import ConstructionBanner from '../components/Banner.astro';
 
-interface Props {
-  title: string
-}
-
-const { title } = Astro.props
+const { 
+  title = SITE_TITLE, 
+  description = SITE_DESCRIPTION,
+} = Astro.props;
 ---
-
 <!doctype html>
-<html lang='en'>
-  <head>
-    <meta charset='UTF-8' />
-    <meta name='description' content="Software and Data" />
-    <meta name='viewport' content='width=device-width' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.ico' />
-    <meta name='generator' content={Astro.generator} />
-    <title>{title}</title>
-    <ViewTransitions />
-  </head>
-  <body class='h-screen w-screen relative'>
-    <div class='absolute top-0 z-20 w-full'>
-      <Header />
-    </div>
-    <div class='h-full w-full overflow-auto'>
-      <main class='flex-1'>
-        <slot />
-      </main>
-    </div>
-    <div class='absolute bottom-0 w-full'>
-      <Footer />
-    </div>
-  </body>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Basics</title>
+	</head>
+	<body>
+		<ConstructionBanner />
+		<slot />
+	</body>
 </html>

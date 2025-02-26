@@ -1,40 +1,23 @@
 {
-  "name": "oresttokovenko-blog",
+  "name": "orest-tokovenko-blog",
   "type": "module",
-  "version": "2024",
+  "version": "2025",
+  "projectType": "website",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
     "toolbar": "astro preferences disable devToolbar",
-    "lint": "prettier --write  \"**/*.{js,jsx,ts,tsx,md,mdx,astro}\" && eslint --fix \"src/**/*.{js,ts,jsx,tsx,astro}\""
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.7",
-    "@astrojs/mdx": "^2.2.0",
-    "@astrojs/react": "^3.1.0",
-    "@astrojs/rss": "^4.0.5",
-    "@astrojs/sitemap": "^3.1.1",
-    "@astrojs/tailwind": "^5.1.0",
-    "@types/react": "^18.2.62",
-    "@types/react-dom": "^18.2.19",
-    "astro": "^4.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "@astrojs/mdx": "^4.0.8",
+    "@tailwindcss/vite": "^4.0.9",
+    "astro": "^5.3.1",
+    "react-icons": "^5.5.0"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.10",
-    "@typescript-eslint/parser": "^7.1.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-astro": "^0.31.4",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "prettier": "^3.2.5",
-    "prettier-config-standard": "^7.0.0",
-    "prettier-plugin-astro": "^0.13.0"
+    "prettier": "3.5.2",
+    "prettier-plugin-astro": "0.14.1"
   }
 }
