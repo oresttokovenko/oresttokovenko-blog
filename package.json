@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "toolbar": "astro preferences disable devToolbar",
-    "astro": "astro"
+    "astro": "astro",
+    "lint": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.8",
