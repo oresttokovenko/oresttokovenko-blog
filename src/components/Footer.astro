@@ -1,0 +1,36 @@
+---
+// Footer Component
+import { HiArrowRight } from 'react-icons/hi';
+---
+
+<footer class="w-full bg-gray-100 py-3 px-4 font-mono flex-none">
+  <div class="max-w-screen-lg mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+    <p class="text-xs md:text-sm text-gray-600">© 2025 Orest Tokovenko</p>
+    <div class="flex gap-4 md:gap-6">
+      <a 
+        href="https://linkedin.com/in/oresttokovenko" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="group flex items-center text-xs md:text-sm text-gray-700 hover:text-black"
+      >
+        <span class="relative">
+          LinkedIn
+          <span class="absolute left-0 bottom-0 w-full h-0.5 bg-black origin-left transform scale-x-0 transition-transform duration-1000 group-hover:scale-x-100"></span>
+        </span>
+        <HiArrowRight className="ml-1 text-xs" />
+      </a>
+      <a 
+        href="https://github.com/oresttokovenko" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="group flex items-center text-xs md:text-sm text-gray-700 hover:text-black"
+      >
+        <span class="relative">
+          GitHub
+          <span class="absolute left-0 bottom-0 w-full h-0.5 bg-black origin-left transform scale-x-0 transition-transform duration-1000 group-hover:scale-x-100"></span>
+        </span>
+        <HiArrowRight className="ml-1 text-xs" />
+      </a>
+    </div>
+  </div>
+</footer>
