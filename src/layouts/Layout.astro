@@ -1,30 +1,30 @@
 ---
 // main flexbox lives here
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-import '@styles/global.css';
-import ConstructionBanner from '@components/Banner.astro';
-import Footer from '@components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import "@styles/global.css";
+import Footer from "@components/Footer.astro";
+
 const { 
   title = SITE_TITLE, 
   description = SITE_DESCRIPTION,
+  showFooter = true
 } = Astro.props;
 ---
+
 <!doctype html>
-<html lang="en" class="h-full">
-	<head>
-		<meta charset="UTF-8" />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body class="flex flex-col h-full">
-		<ConstructionBanner class="flex-none" />
-		<main class="flex-grow overflow-auto">
-			<slot />
-		</main>
-		<Footer />
-	</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class="flex flex-col min-h-screen bg-white m-0">
+    <div class="flex-grow">
+      <slot />
+    </div>
+    {showFooter && <Footer />}
+  </body>
 </html>

@@ -1,4 +1,12 @@
 @import "tailwindcss";
+@plugin '@tailwindcss/typography';
+
+/* Remove default margins and padding */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
 /* setting highlight colour to violet and highlighted text to white */
 ::selection {
@@ -29,4 +37,22 @@
 @font-face {
   font-family: "SFPro";
   src: url("/fonts/SF-Pro.ttf") format("truetype");
+}
+
+/* SF Pro utility class */
+.sf-pro {
+  font-family: 'SFPro', 'SFProDisplay', 'SFProText', 'San Francisco', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Code block styling */
+pre {
+  @apply bg-gray-900 text-white p-4 rounded-lg overflow-x-auto my-6;
+}
+
+code {
+  @apply font-mono text-sm;
+}
+
+:not(pre) > code {
+  @apply bg-gray-100 px-1.5 py-0.5 rounded text-gray-800;
 }
