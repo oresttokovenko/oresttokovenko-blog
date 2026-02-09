@@ -3,6 +3,64 @@ import Landing from "@components/Landing.astro";
 import Layout from "@layouts/Layout.astro";
 ---
 
-<Layout>
-  <Landing />
+<Layout showFooter={false}>
+  <div class="h-screen overflow-hidden flex flex-col">
+    <Landing />
+    <footer
+      class="w-full py-3 px-4 font-mono flex-none"
+      style="background-color: rgb(238, 230, 210);"
+    >
+      <div
+        class="max-w-screen-lg mx-auto flex flex-col md:flex-row justify-between items-center gap-2 h-full"
+      >
+        <p class="text-sm text-gray-600">
+          © {new Date().getFullYear()}
+          <a href="/" class="no-underline text-gray-600 hover:text-black"
+            >Orest Tokovenko</a
+          >
+        </p>
+        <nav aria-label="Footer navigation" class="flex gap-4 md:gap-6">
+          {
+            [
+              { href: "/blog", label: "Blog" },
+              {
+                href: "https://linkedin.com/in/oresttokovenko",
+                label: "LinkedIn",
+                external: true,
+              },
+              {
+                href: "https://github.com/oresttokovenko",
+                label: "GitHub",
+                external: true,
+              },
+            ].map((link) => (
+              <a
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                class="group flex items-center text-sm text-gray-700 hover:text-black"
+              >
+                <span class="relative">
+                  {link.label}
+                  <span class="absolute left-0 bottom-0 w-full h-0.5 bg-black origin-left transform scale-x-0 transition-transform duration-1000 group-hover:scale-x-100" />
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="ml-2 h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </footer>
+  </div>
 </Layout>

@@ -1,11 +1,22 @@
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
+
 @import "tailwindcss";
 @plugin '@tailwindcss/typography';
 
+@theme {
+  --font-sans: "IBM Plex Mono", monospace;
+  --font-mono: "IBM Plex Mono", monospace;
+  --color-highlight: #2218d6;
+}
+
 /* Remove default margins and padding */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 /* setting highlight colour to violet and highlighted text to white */
@@ -14,34 +25,9 @@ html, body {
   color: white;
 }
 
-@font-face {
-  font-family: "SFMono";
-  src: url("/fonts/SF-Mono-Regular.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "SFProDisplay";
-  src: url("/fonts/SF-Pro-Display-Heavy.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "SFProText";
-  src: url("/fonts/SF-Pro-Text-Regular.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "SFProSemibold";
-  src: url("/fonts/SF-Pro-Display-Semibold.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "SFPro";
-  src: url("/fonts/SF-Pro.ttf") format("truetype");
-}
-
-/* SF Pro utility class */
-.sf-pro {
-  font-family: 'SFPro', 'SFProDisplay', 'SFProText', 'San Francisco', -apple-system, BlinkMacSystemFont, sans-serif;
+/* Font utility class */
+.font-ibm {
+  font-family: "IBM Plex Mono", monospace;
 }
 
 /* Code block styling */

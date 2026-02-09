@@ -1,15 +1,93 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { SITE_TITLE } from "../consts";
+import { Image } from "astro:assets";
+import notFoundImage from "@/assets/404_image.png";
 ---
 
-<Layout title={`${SITE_TITLE} | Page Not Found`}>
-  <div class="w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-white px-4">
-    <div class="text-center max-w-3xl">
-      <h1 class="text-3xl leading-none font-mono text-gray-900 mb-6 font-bold">404</h1>
-      <p class="text-xl md:text-2xl font-mono text-gray-600">
-        The page you're looking for doesn't exist or has been moved
-      </p>
+<Layout title={`${SITE_TITLE} | Page Not Found`} showFooter={false}>
+  <div
+    class="h-screen overflow-hidden flex flex-col"
+    style="background-color: rgb(238, 233, 219);"
+  >
+    <div class="flex-1 flex flex-col items-center justify-center px-4">
+      <div class="text-center" style="max-width: 672px;">
+        <Image
+          src={notFoundImage}
+          alt="404"
+          class="w-full mx-auto h-auto mb-6"
+          loading="eager"
+          quality={90}
+        />
+
+        <h1 class="text-4xl font-bold font-ibm text-gray-900 mb-8">404</h1>
+
+        <blockquote class="text-base font-ibm italic text-gray-600">
+          "If one does not know to which port one is sailing, no wind is
+          favorable."
+          <footer class="text-sm mt-2 not-italic text-gray-500">
+            — Seneca
+          </footer>
+        </blockquote>
+      </div>
     </div>
+
+    <!-- Inline footer matching 404 background -->
+    <footer
+      class="w-full pt-3 pb-8 md:pb-3 px-4 font-ibm flex-none"
+      style="background-color: rgb(238, 233, 219);"
+    >
+      <div
+        class="max-w-screen-lg mx-auto flex flex-col md:flex-row justify-between items-center gap-2"
+      >
+        <p class="text-sm text-gray-600">
+          © {new Date().getFullYear()}
+          <a href="/" class="no-underline text-gray-600 hover:text-black"
+            >Orest Tokovenko</a
+          >
+        </p>
+        <nav aria-label="Footer navigation" class="flex gap-4 md:gap-6">
+          {
+            [
+              { href: "/blog", label: "Blog" },
+              {
+                href: "https://linkedin.com/in/oresttokovenko",
+                label: "LinkedIn",
+                external: true,
+              },
+              {
+                href: "https://github.com/oresttokovenko",
+                label: "GitHub",
+                external: true,
+              },
+            ].map((link) => (
+              <a
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                class="group flex items-center text-sm text-gray-700 hover:text-black"
+              >
+                <span class="relative">
+                  {link.label}
+                  <span class="absolute left-0 bottom-0 w-full h-0.5 bg-black origin-left transform scale-x-0 transition-transform duration-1000 group-hover:scale-x-100" />
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="ml-2 h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </footer>
   </div>
 </Layout>

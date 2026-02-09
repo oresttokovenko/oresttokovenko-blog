@@ -1,13 +1,21 @@
 ---
 // src/components/Landing.astro
+import { Image } from "astro:assets";
+import heroImage from "@/assets/hero_roman_ruins.png";
 ---
 
-<section class="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-white">
-  <!-- Video container -->
-  <div class="max-w-4xl w-full px-4">
-    <video class="w-full scale-200 sm:scale-100" autoplay loop muted playsinline>
-      <source src="/pixel_ring.mp4" type="video/mp4" />
-      Your browser does not support the video tag
-    </video>
+<section
+  class="w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden"
+  style="background-color: rgb(238, 230, 210);"
+>
+  <!-- Hero image container -->
+  <div class="w-full px-4" style="max-width: 1344px;">
+    <Image
+      src={heroImage}
+      alt="Ancient Roman ruins illustration"
+      class="w-full h-auto"
+      loading="eager"
+      quality={90}
+    />
   </div>
 </section>
