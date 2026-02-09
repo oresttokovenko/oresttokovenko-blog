@@ -45,14 +45,14 @@ const { Content } = await render(entry);
           </div>
 
           <h1
-            class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 font-ibm tracking-tight mb-6"
+            class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 font-spectral tracking-tight mb-6"
           >
             {entry.data.title}
           </h1>
 
           {
             entry.data.description && (
-              <p class="text-sm text-gray-700 mt-4 max-w-2xl mx-auto font-ibm">
+              <p class="text-sm text-gray-700 mt-4 max-w-2xl mx-auto font-spectral">
                 {entry.data.description}
               </p>
             )
@@ -62,7 +62,7 @@ const { Content } = await render(entry);
         </header>
 
         <div
-          class="mt-12 prose prose-sm prose-h1:text-xl prose-h2:text-base prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 prose-p:my-4 prose-p:leading-relaxed prose-code:font-ibm max-w-none mx-auto font-ibm"
+          class="mt-12 prose prose-base prose-h1:text-xl prose-h2:text-base prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 prose-p:my-4 prose-p:leading-relaxed prose-code:font-ibm max-w-none mx-auto font-spectral"
         >
           <Content />
         </div>
@@ -70,8 +70,8 @@ const { Content } = await render(entry);
         <div class="mt-16 pt-8 border-t border-gray-200">
           <a
             href="/blog"
-            class="inline-flex items-center font-ibm font-medium"
-            style="color: #2218d6;"
+            class="inline-flex items-center font-ibm font-medium text-base"
+            style="color: rgb(22, 31, 116);"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
