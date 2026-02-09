@@ -2,13 +2,13 @@
 import Layout from "../layouts/Layout.astro";
 import { SITE_TITLE } from "../consts";
 import { Image } from "astro:assets";
-import notFoundImage from "@/assets/404_image.png";
+import notFoundImage from "@/assets/404_image_rgba.png";
 ---
 
 <Layout title={`${SITE_TITLE} | Page Not Found`} showFooter={false}>
   <div
     class="h-screen overflow-hidden flex flex-col"
-    style="background-color: rgb(238, 233, 219);"
+    style="background-color: rgb(238, 230, 210);"
   >
     <div class="flex-1 flex flex-col items-center justify-center px-4">
       <div class="text-center" style="max-width: 672px;">
@@ -20,9 +20,8 @@ import notFoundImage from "@/assets/404_image.png";
           quality={90}
         />
 
-        <blockquote class="text-base font-ibm italic text-gray-600 mt-2">
-          "If one does not know to which port one is sailing, no wind is
-          favorable."
+        <blockquote class="text-base font-ibm italic text-gray-600 mt-6">
+          "If one does not know to which port one is sailing, no wind is favorable"
           <footer class="text-sm mt-2 not-italic text-gray-500">
             — Seneca
           </footer>
@@ -33,7 +32,7 @@ import notFoundImage from "@/assets/404_image.png";
     <!-- Inline footer matching 404 background -->
     <footer
       class="w-full pt-3 pb-8 md:pb-3 px-4 font-ibm flex-none"
-      style="background-color: rgb(238, 233, 219);"
+      style="background-color: rgb(238, 230, 210);"
     >
       <div
         class="max-w-screen-lg mx-auto flex flex-col md:flex-row justify-between items-center gap-2"
