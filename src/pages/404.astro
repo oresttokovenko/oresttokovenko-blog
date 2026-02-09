@@ -7,22 +7,23 @@ import notFoundImage from "@/assets/404_image_rgba.png";
 
 <Layout title={`${SITE_TITLE} | Page Not Found`} showFooter={false}>
   <div
-    class="h-screen overflow-hidden flex flex-col"
+    class="flex h-screen flex-col overflow-hidden"
     style="background-color: rgb(238, 230, 210);"
   >
-    <div class="flex-1 flex flex-col items-center justify-center px-4">
+    <div class="flex flex-1 flex-col items-center justify-center px-4">
       <div class="text-center" style="max-width: 672px;">
         <Image
           src={notFoundImage}
           alt="404"
-          class="w-full mx-auto h-auto"
+          class="mx-auto h-auto w-full"
           loading="eager"
           quality={90}
         />
 
-        <blockquote class="text-base font-ibm italic text-gray-600 mt-6">
-          "If one does not know to which port one is sailing, no wind is favorable"
-          <footer class="text-sm mt-2 not-italic text-gray-500">
+        <blockquote class="font-ibm mt-6 text-base text-gray-600 italic">
+          "If one does not know to which port one is sailing, no wind is
+          favorable"
+          <footer class="mt-2 text-sm text-gray-500 not-italic">
             — Seneca
           </footer>
         </blockquote>
@@ -31,15 +32,15 @@ import notFoundImage from "@/assets/404_image_rgba.png";
 
     <!-- Inline footer matching 404 background -->
     <footer
-      class="w-full pt-3 pb-8 md:pb-3 px-4 font-ibm flex-none"
+      class="font-ibm w-full flex-none px-4 pt-3 pb-8 md:pb-3"
       style="background-color: rgb(238, 230, 210);"
     >
       <div
-        class="max-w-screen-lg mx-auto flex flex-col md:flex-row justify-between items-center gap-2"
+        class="mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-2 md:flex-row"
       >
         <p class="text-sm text-gray-600">
           © {new Date().getFullYear()}
-          <a href="/" class="no-underline text-gray-600 hover:text-black"
+          <a href="/" class="text-gray-600 no-underline hover:text-black"
             >Orest Tokovenko</a
           >
         </p>
@@ -66,7 +67,7 @@ import notFoundImage from "@/assets/404_image_rgba.png";
               >
                 <span class="relative">
                   {link.label}
-                  <span class="absolute left-0 bottom-0 w-full h-0.5 bg-black origin-left transform scale-x-0 transition-transform duration-1000 group-hover:scale-x-100" />
+                  <span class="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 transform bg-black transition-transform duration-1000 group-hover:scale-x-100" />
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
