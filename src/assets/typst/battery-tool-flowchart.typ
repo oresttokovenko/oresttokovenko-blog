@@ -9,7 +9,7 @@
 #diagram(
   node-stroke: 0.8pt + accent,
   node-fill: none,
-  spacing: (1.5em, 1.8em),
+  spacing: (2.5em, 2em),
   edge-stroke: 0.8pt + accent,
 
   node((0, 0), [Start], corner-radius: 2pt, extrude: (0, 3)),
