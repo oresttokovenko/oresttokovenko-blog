@@ -44,7 +44,13 @@ code {
 }
 
 :not(pre) > code {
-  @apply rounded bg-gray-100 px-1.5 py-0.5 text-gray-800;
+  @apply rounded px-1.5 py-0.5;
+  background-color: rgb(224, 214, 190);
+  color: #2218d6;
+}
+
+hr {
+  border-color: #2218d6;
 }
 
 /* Remove backtick characters added by tailwindcss-typography */

@@ -9,17 +9,21 @@
     "preview": "astro preview",
     "toolbar": "astro preferences disable devToolbar",
     "astro": "astro",
-    "lint": "prettier . --write"
+    "lint": "prettier . --write",
+    "lint:typst": "typstyle --check src/assets/typst/*.typ",
+    "format:typst": "typstyle -i src/assets/typst/*.typ"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
+    "@myriaddreamin/typst-ts-node-compiler": "^0.7.0-rc2",
     "@tailwindcss/vite": "^4.1.17",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.16.11",
+    "astro-typst": "^0.12.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

@@ -3,11 +3,15 @@ title: "How I Optimized My Way to a Free MacBook Battery Replacement"
 publishDate: 2026-02-08
 description: "How I used IOKit and the SMC to get a free battery replacement before my AppleCare expired"
 tags: ["hardware", "optimization", "Apple"]
-wip: false
+wip: true
 ---
 
 import { Image } from "astro:assets";
+import { Typst } from "astro-typst/src/components";
 import batteryImage from "@/assets/optimize-macbook-battery_rgba.png";
+import batteryFormula from "@/assets/typst/battery-health-formula.typ?raw";
+import batteryFlowchart from "@/assets/typst/battery-tool-flowchart.typ?raw";
+import smcStack from "@/assets/typst/smc-stack-diagram.typ?raw";
 
 <Image
   src={batteryImage}
@@ -17,9 +21,23 @@ import batteryImage from "@/assets/optimize-macbook-battery_rgba.png";
   width={400}
 />
 
-My AppleCare Plus was about to expire and my battery health was at 81%. Apple replaces your battery for free if it drops to 79% or below. Two percent off, weeks to go. I wasn't going to eat a $199 replacement over that.
+After upgrading to an M4 MacBook Pro 16-inch, I wanted to sell my old M1 MacBook Pro 16-inch to offset some of the cost. Before listing it I did the usual checks: cosmetics, storage, battery. The battery health was at 81%. Not terrible, but buyers notice that kind of thing. Then I remembered I still had AppleCare Plus on it and looked up the replacement policy. Apple will swap your battery for free if the maximum capacity drops to 79% or below before your plan expires. Selling a MacBook with a fresh battery is a completely different proposition than selling one at 81%. My AppleCare had a few weeks left. I needed 2%.
 
-So I wrote a small program that talks to the System Management Controller (SMC) through IOKit, figured out how the charge cycle tracking actually works, and ran enough cycles to push the health reading down before my coverage lapsed.
+Here's how I killed the battery on purpose and got Apple to replace it for free.
+
+## Figuring out how Macs control charging
+
+The first question was whether it's even possible to programmatically control charging on a Mac. I went down a rabbit hole trying to find out how macOS manages power at the hardware level, and kept running into the same name: the System Management Controller, or SMC. It handles thermals, fan speed, sleep/wake, LED indicators, and most importantly for my purposes, battery charging.
+
+The problem is that Apple doesn't document any of this publicly. There's no developer guide, no API reference, nothing. A developer [asked Apple directly](https://developer.apple.com/forums/thread/46025) on the developer forums and got silence. The [Apple Wiki](https://theapplewiki.com/wiki/System_Management_Controller) has a decent overview of what the SMC is, and [Howard Oakley's writeup](https://eclecticlight.co/2021/08/28/explainer-system-management-controller-smc/) goes deeper into how it fits into the boot and power management stack. But the real breakthrough was a [GitHub issue on the bclm project](https://github.com/zackelia/bclm/issues/20) where people had reverse-engineered the specific SMC keys that control charging. That's where I learned about `CH0B`, `CH0C`, `CH0I`, and `CH0K`. Writing `02` to `CH0B` and `CH0C` tells the SMC to block charging. Writing `01` to `CH0I` forces the Mac to discharge even while plugged in. Writing `00` to all of them restores normal behavior.
+
+One important caveat: this approach only works on [Apple Silicon Macs](https://support.apple.com/en-us/116943) (M1 and later). On Intel Macs, the SMC was a separate physical chip on the logic board with its own firmware and a different set of keys. When Apple moved to their own silicon, the SMC's functions got [absorbed into the SoC](https://asahilinux.org/docs/platform/introduction/) as part of the coprocessor architecture, but the [key interface](https://asahilinux.org/docs/hw/soc/smc/) stayed roughly the same. The CH0B/CH0C/CH0I keys were reverse-engineered on M1 machines and have worked consistently across M-series generations since.
+
+Knowing the keys was one thing. Actually talking to the SMC was the next challenge. Here's how deep the stack goes from a Python script down to the actual hardware:
+
+<div class="my-6 flex justify-center">
+  <Typst code={smcStack} />
+</div>
 
 ## Reading battery data with IOKit
 
@@ -49,6 +67,24 @@ int main(void) {
 }
 ```
 
----
+Apple defines battery health as the ratio of current max capacity to the original design capacity:
 
-_This post is still being written, more to come_
+<div class="my-4 flex justify-center">
+  <Typst code={batteryFormula} />
+</div>
+
+So with a design capacity of 8790 mAh, I needed my max capacity to drop below 6944 mAh to hit that 79% threshold.
+
+The tool I wrote automates charge cycling via the SMC. Here's how the logic works:
+
+<div class="my-6 flex justify-center">
+  <Typst code={batteryFlowchart} />
+</div>
+
+The loop drains to 5% then charges back to 95%, over and over. Each full cycle degrades the battery slightly. The program checks health every minute and stops once it hits the 79% target, re-enabling normal charging on exit.
+
+One thing to do before running this: turn off [Optimized Battery Charging](https://support.apple.com/en-ca/guide/mac-help/mchlfc3b7879/mac) in System Settings > Battery. macOS learns your charging habits and will cap the charge at 80% if it thinks you're going to stay plugged in. That directly fights what we're trying to do here, since the tool needs to charge all the way up to 95% to get a full depth-of-discharge cycle.
+
+With that out of the way, I wanted a rough estimate of how long the whole thing would take. Apple's [design spec](https://support.apple.com/en-us/102888) says MacBook batteries retain 80% of original capacity at 1,000 charge cycles, which averages out to about 0.02% degradation per cycle. But that's for normal use with shallow discharges. [Battery University's research](https://www.batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries) on lithium-polymer cells shows that full depth-of-discharge cycles, draining from near-full to near-empty like this tool does, wear the battery about 6-7x faster than shallow ones. So I was expecting something closer to 0.04-0.08% per cycle. From 81% down to 79% is a 2% drop. At the design spec rate adjusted for deep cycling, that's somewhere around 25-50 full loops. Each one took 4-5 hours depending on what else was running, so I was looking at roughly a week and a half of nonstop cycling. Not quick, but I still had a few weeks of AppleCare left.
+
+---
