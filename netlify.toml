@@ -2,9 +2,6 @@
   publish = "dist"
   command = "bun run build"
 
-[build.environment]
-  NODE_VERSION = "22"
-
 # Cache-control and security headers
 [[headers]]
   for = "/*"
