@@ -53,6 +53,18 @@ hr {
   border-color: #2218d6;
 }
 
+/* Make Typst SVG diagrams responsive */
+.typst-doc {
+  max-width: 100%;
+  height: auto;
+  overflow-x: auto;
+}
+
+.typst-doc svg {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Remove backtick characters added by tailwindcss-typography */
 code::before,
 code::after {
