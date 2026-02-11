@@ -32,7 +32,7 @@ const { Content } = await render(entry);
           <div class="mb-6 flex items-center justify-center space-x-2">
             <time
               datetime={entry.data.publishDate.toISOString()}
-              class="font-ibm text-xs text-gray-600"
+              class="font-ibm text-sm text-gray-600"
             >
               {
                 entry.data.publishDate.toLocaleDateString("en-US", {
@@ -52,7 +52,7 @@ const { Content } = await render(entry);
 
           {
             entry.data.description && (
-              <p class="font-spectral mx-auto mt-4 max-w-2xl text-sm text-gray-700">
+              <p class="font-spectral mx-auto mt-4 max-w-2xl text-base text-gray-700">
                 {entry.data.description}
               </p>
             )

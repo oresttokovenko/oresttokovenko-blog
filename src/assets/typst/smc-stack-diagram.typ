@@ -20,7 +20,7 @@
   edge("-|>"),
   node(
     (0, 1),
-    [*CPython* \ C extension module],
+    [*CFFI* \ C Foreign Function Interface],
     corner-radius: 2pt,
     width: 16em,
   ),
@@ -55,12 +55,12 @@
 
   node(
     (1.4, 0),
-    text(size: 8pt, fill: accent)[calls into C bindings via CPython],
+    text(size: 8pt, fill: accent)[calls into C via CFFI bindings],
     stroke: none,
   ),
   node(
     (1.4, 1),
-    text(size: 8pt, fill: accent)[exposes `IOKit` functions to Python],
+    text(size: 8pt, fill: accent)[declares and calls `IOKit` functions],
     stroke: none,
   ),
   node(
