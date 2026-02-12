@@ -12,7 +12,10 @@
   draw.set-style(stroke: 0.8pt + accent)
 
   block(
-    x: 0, y: 0, w: 10, h: 6,
+    x: 0,
+    y: 0,
+    w: 10,
+    h: 6,
     id: "smc",
     ports: (
       west: (
@@ -48,14 +51,38 @@
     fill: none,
   )
 
-  stub("smc-port-ch0b", "west", name: text(size: 7pt, fill: accent)[Disable charging])
-  stub("smc-port-ch0c", "west", name: text(size: 7pt, fill: accent)[Inhibit charging])
-  stub("smc-port-ch0i", "west", name: text(size: 7pt, fill: accent)[Force discharge])
-  stub("smc-port-ch0k", "west", name: text(size: 7pt, fill: accent)[Charging control])
-  stub("smc-port-tb0t", "east", name: text(size: 7pt, fill: accent)[Battery temp])
-  stub("smc-port-b0rm", "east", name: text(size: 7pt, fill: accent)[Remaining mAh])
-  stub("smc-port-b0fc", "east", name: text(size: 7pt, fill: accent)[Full charge mAh])
-  stub("smc-port-b0ct", "east", name: text(size: 7pt, fill: accent)[Cycle count])
+  stub("smc-port-ch0b", "west", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Disable charging])
+  stub("smc-port-ch0c", "west", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Inhibit charging])
+  stub("smc-port-ch0i", "west", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Force discharge])
+  stub("smc-port-ch0k", "west", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Charging control])
+  stub("smc-port-tb0t", "east", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Battery temp])
+  stub("smc-port-b0rm", "east", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Remaining mAh])
+  stub("smc-port-b0fc", "east", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Full charge mAh])
+  stub("smc-port-b0ct", "east", name: text(
+    size: 7pt,
+    fill: accent,
+  )[Cycle count])
   stub("smc-port-sbav", "north")
   stub("smc-port-sba1", "north")
   stub("smc-port-id0r", "north")

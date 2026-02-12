@@ -1,4 +1,13 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 
 const data = [
   { cycle: 800, health: 81.0 },
@@ -10,14 +19,14 @@ const data = [
   { cycle: 830, health: 80.47 },
   { cycle: 835, health: 80.34 },
   { cycle: 840, health: 80.21 },
-  { cycle: 845, health: 80.10 },
+  { cycle: 845, health: 80.1 },
   { cycle: 850, health: 79.95 },
   { cycle: 855, health: 79.82 },
   { cycle: 860, health: 79.68 },
   { cycle: 865, health: 79.53 },
-  { cycle: 870, health: 79.40 },
+  { cycle: 870, health: 79.4 },
   { cycle: 875, health: 79.25 },
-  { cycle: 880, health: 79.10 },
+  { cycle: 880, health: 79.1 },
   { cycle: 885, health: 78.93 },
 ];
 
@@ -27,7 +36,10 @@ export default function BatteryDegradationChart() {
   return (
     <div style={{ fontFamily: "IBM Plex Mono, monospace", fontSize: "12px" }}>
       <ResponsiveContainer width="100%" height={350}>
-        <AreaChart data={data} margin={{ top: 10, right: 80, left: 20, bottom: 25 }}>
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 80, left: 20, bottom: 25 }}
+        >
           <defs>
             <linearGradient id="healthGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={accent} stopOpacity={0.2} />
@@ -39,14 +51,27 @@ export default function BatteryDegradationChart() {
             dataKey="cycle"
             stroke="#6b7280"
             tick={{ fontSize: 11 }}
-            label={{ value: "Cycle count", position: "insideBottom", offset: -15, fontSize: 12, fill: "#6b7280" }}
+            label={{
+              value: "Cycle count",
+              position: "insideBottom",
+              offset: -15,
+              fontSize: 12,
+              fill: "#6b7280",
+            }}
           />
           <YAxis
             domain={[78.5, 81.5]}
             stroke="#6b7280"
             tick={{ fontSize: 11 }}
             tickFormatter={(v: number) => `${v}%`}
-            label={{ value: "Battery health", angle: -90, position: "insideLeft", offset: -5, fontSize: 12, fill: "#6b7280" }}
+            label={{
+              value: "Battery health",
+              angle: -90,
+              position: "insideLeft",
+              offset: -5,
+              fontSize: 12,
+              fill: "#6b7280",
+            }}
           />
           <Tooltip
             contentStyle={{
@@ -62,7 +87,12 @@ export default function BatteryDegradationChart() {
             y={79}
             stroke="#dc2626"
             strokeDasharray="6 3"
-            label={{ value: "79% threshold", position: "right", fontSize: 11, fill: "#dc2626" }}
+            label={{
+              value: "79% threshold",
+              position: "right",
+              fontSize: 11,
+              fill: "#dc2626",
+            }}
           />
           <Area
             type="monotone"

@@ -10,7 +10,6 @@
     "toolbar": "astro preferences disable devToolbar",
     "astro": "astro",
     "lint": "prettier . --write",
-    "lint:typst": "typstyle --check src/assets/typst/*.typ",
     "format:typst": "typstyle -i src/assets/typst/*.typ"
   },
   "dependencies": {

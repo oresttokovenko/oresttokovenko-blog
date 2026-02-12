@@ -1,5 +1,4 @@
 ---
-// main flexbox lives here
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "@styles/global.css";
 import Footer from "@components/Footer.astro";
@@ -45,7 +44,10 @@ const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
     {ogImage && <meta property="og:image" content={ogImage} />}
 
     <!-- Twitter Card tags -->
-    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
+    <meta
+      name="twitter:card"
+      content={ogImage ? "summary_large_image" : "summary"}
+    />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImage && <meta name="twitter:image" content={ogImage} />}

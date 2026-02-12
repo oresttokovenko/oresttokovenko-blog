@@ -34,13 +34,13 @@ The first question was whether it's even possible to programmatically control ch
 
 The problem is that Apple doesn't document any of this publicly. There's no developer guide, no API reference, nothing. A developer [asked Apple directly](https://developer.apple.com/forums/thread/46025) on the developer forums and got silence. The [Apple Wiki](https://theapplewiki.com/wiki/System_Management_Controller) has a decent overview of what the SMC is, and [Howard Oakley's writeup](https://eclecticlight.co/2021/08/28/explainer-system-management-controller-smc/) goes deeper into how it fits into the boot and power management stack. But the real breakthrough was a [GitHub issue on the bclm project](https://github.com/zackelia/bclm/issues/20) where people had reverse-engineered the specific SMC keys that control charging. That's where I learned about `CH0B`, `CH0C`, `CH0I`, and `CH0K`. Writing `02` to `CH0B` and `CH0C` tells the SMC to block charging. Writing `01` to `CH0I` forces the Mac to discharge even while plugged in. Writing `00` to all of them restores normal behavior.
 
-Here's what the SMC key interface looks like. The left side are the write keys that control charging behavior, and the right side are read-only keys for monitoring battery state:
+Here's a sample of the SMC key interface. A given Mac can have [hundreds of keys](https://github.com/acidanthera/VirtualSMC/blob/master/Docs/SMCKeys.txt) covering thermals, fans, voltage, current, and more - these are just the ones relevant to battery and charging:
 
 <div class="my-6 flex justify-center">
   <Typst code={smcChip} />
 </div>
 
-One important caveat: this approach only works on [Apple Silicon Macs](https://support.apple.com/en-us/116943) (M1 and later). On Intel Macs, the SMC was a separate physical chip on the logic board with its own firmware and a different set of keys. When Apple moved to their own silicon, the SMC's functions got [absorbed into the SoC](https://asahilinux.org/docs/platform/introduction/) as part of the coprocessor architecture, but the [key interface](https://asahilinux.org/docs/hw/soc/smc/) stayed roughly the same. The CH0B/CH0C/CH0I keys were reverse-engineered on M1 machines and have worked consistently across M-series generations since.
+One important caveat: this approach only works on [Apple Silicon Macs](https://support.apple.com/en-us/116943) (M1 and later). The `CH0B`/`CH0C`/`CH0I` keys were reverse-engineered on M1 machines and worked across M-series generations, but Apple's macOS 15.7+ firmware [replaced them](https://github.com/actuallymentor/battery/pull/388) with a new set of keys: `CHTE` for charging control and `CHIE` for forced discharge. The tool detects which keys your machine supports at startup by attempting to read each one via `SMCReadKey` - if the key doesn't exist, the call returns a non-zero error code and the tool falls back to the legacy set.
 
 ## The math
 
@@ -50,7 +50,7 @@ Apple defines battery health as the ratio of current max capacity to the origina
   <Typst code={batteryFormula} />
 </div>
 
-So with a design capacity of 8790 mAh, I needed my max capacity to drop below 6944 mAh to hit that 79% threshold. The plan was simple: automate full charge-discharge cycles until the health drops enough. Apple's [design spec](https://support.apple.com/en-us/102888) says MacBook batteries retain 80% of original capacity at 1,000 charge cycles, which averages out to about 0.02% degradation per cycle. But that's for normal use with shallow discharges. [Battery University's research](https://www.batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries) on lithium-polymer cells shows that full depth-of-discharge cycles wear the battery about 6-7x faster than shallow ones. So I was expecting something closer to 0.04-0.08% per cycle. From 81% down to 79% is a 2% drop, which meant somewhere around 25-50 full loops.
+My M1 MacBook Pro 16-inch reported a `DesignCapacity` of 8694 mAh, so I needed my max capacity to drop below 6868 mAh to hit that 79% threshold. The plan was simple: automate full charge-discharge cycles until the health drops enough. Apple's [design spec](https://support.apple.com/en-us/102888) says MacBook batteries retain 80% of original capacity at 1,000 charge cycles, which averages out to about 0.02% degradation per cycle. But that's for normal use with shallow discharges. [Battery University's research](https://www.batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries) on lithium-polymer cells shows that full depth-of-discharge cycles wear the battery about 6-7x faster than shallow ones. So I was expecting something closer to 0.04-0.08% per cycle. From 81% down to 79% is a 2% drop, which meant somewhere around 25-50 full loops.
 
 ## Building the tool
 
@@ -65,8 +65,8 @@ There are a few distinct capabilities the tool needs. Here's what each one requi
 - **Detect if a charger is connected** - [`IOKit/ps/IOPowerSources.h`](https://developer.apple.com/documentation/iokit/iopowersources_h) enumerates power sources and tells you whether AC is attached
 - **Read battery percentage** - [`IOKit/IOKitLib.h`](https://developer.apple.com/documentation/iokit/iokitlib_h) to query the `AppleSmartBattery` IOService for `CurrentCapacity`
 - **Read battery health** - same IOService via [`IOKit/ps/IOPSKeys.h`](https://developer.apple.com/documentation/iokit/iopskeys_h), keys `MaxCapacity` and `DesignCapacity`
-- **Disable/enable charging** - [smcFanControl's smc.c](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c), write to SMC keys `CH0B` and `CH0C`
-- **Force discharge while plugged in** - same smc.c, write to SMC key `CH0I`
+- **Disable/enable charging** - [smcFanControl's smc.c](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c), write to SMC keys `CH0B`/`CH0C` (legacy) or `CHTE` (macOS 15.7+)
+- **Force discharge while plugged in** - same smc.c, write to SMC key `CH0I` (legacy) or `CHIE`/`CH0J` (macOS 15.7+)
 
 All of the above return Apple's [`CoreFoundation`](https://developer.apple.com/documentation/corefoundation) types (`CFDictionaryRef`, `CFNumberRef`, `CFStringRef`, etc.). For the SMC side, the [smcFanControl](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c) project already has a well-tested C implementation for reading and writing SMC keys, so I pulled that in directly. For the battery data, I needed to roll my own C code using the IOKit headers above.
 
@@ -76,7 +76,9 @@ All of the above return Apple's [`CoreFoundation`](https://developer.apple.com/d
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/ps/IOPSKeys.h>
 
-int get_max_capacity(void) {
+typedef int milliamp_hours_t;
+
+milliamp_hours_t get_max_capacity(void) {
     CFTypeRef info = IOPSCopyPowerSourcesInfo();
     CFArrayRef sources = IOPSCopyPowerSourcesList(info);
     CFDictionaryRef battery = IOPSGetPowerSourceDescription(info,
@@ -97,18 +99,18 @@ int get_max_capacity(void) {
 
 With the C side figured out, I needed to wrap these IOKit and SMC calls so I could use them from Python. Python is just a nice front end for C libraries anyway - half the standard library is C under the hood - and writing a CLI with argument parsing, logging, and a sleep loop is a lot more pleasant in Python than in raw C. There are three main options for bridging the two, and they each make different trade-offs:
 
-| Feature | [Python C API](https://docs.python.org/3/c-api/) | [CFFI](https://cffi.readthedocs.io/) | [Cython](https://cython.readthedocs.io/) |
-|---------|-------------|------|--------|
-| **Syntax** | C with PyObject<sup>[1](#pyobject)</sup> | C declarations as strings in Python | Cython syntax (.pyx files) |
-| **Verbosity** | Very verbose | Minimal | Medium |
-| **Learning Curve** | Steep | Low | Medium |
-| **Build Dependencies** | None (built-in) | cffi package | cython package |
-| **Runtime Dependencies** | None | cffi package | None |
-| **Compiled Wheels** | Yes (.so/.pyd) | Yes | Yes |
-| **Boilerplate** | High (PyMethodDef, ref counting) | Low (declare and call) | Medium (.pyx wrappers) |
-| **Performance** | Fastest | Fast | Fast |
+| Feature                  | [Python C API](https://docs.python.org/3/c-api/) | [CFFI](https://cffi.readthedocs.io/) | [Cython](https://cython.readthedocs.io/) |
+| ------------------------ | ------------------------------------------------ | ------------------------------------ | ---------------------------------------- |
+| **Syntax**               | C with PyObject<sup>[1](#pyobject)</sup>         | C declarations as strings in Python  | Cython syntax (.pyx files)               |
+| **Verbosity**            | Very verbose                                     | Minimal                              | Medium                                   |
+| **Learning Curve**       | Steep                                            | Low                                  | Medium                                   |
+| **Build Dependencies**   | None (built-in)                                  | cffi package                         | cython package                           |
+| **Runtime Dependencies** | None                                             | cffi package                         | None                                     |
+| **Compiled Wheels**      | Yes (.so/.pyd)                                   | Yes                                  | Yes                                      |
+| **Boilerplate**          | High (PyMethodDef, ref counting)                 | Low (declare and call)               | Medium (.pyx wrappers)                   |
+| **Performance**          | Fastest                                          | Fast                                 | Fast                                     |
 
-I really wanted an excuse to use Cython because it sounds like a Pokémon evolution of Python, but CFFI was the right call. For a small project like this where I'm wrapping a handful of IOKit and SMC calls, the minimal boilerplate wins out. You declare the C functions as strings (yes this is gross) and CFFI handles the rest. The trade-off is no syntax highlighting or IDE support for those declarations, and a runtime dependency on the cffi package. Both the smcFanControl C code and my custom IOKit battery code get compiled together and shipped as a precompiled Python wheel, so end users don't need a C compiler or any system headers installed.
+I really wanted an excuse to use Cython because it sounds like a Pokémon evolution of Python, but CFFI was the right call. For a small project like this where I'm wrapping a handful of IOKit and SMC calls, the minimal boilerplate wins out. You declare the C functions as strings (yes this is gross) and CFFI handles the rest. The trade-off is no syntax highlighting or IDE support for those declarations, and a runtime dependency on the CFFI package. Both the `smc.c` code and my custom IOKit battery code get compiled together and shipped as a precompiled Python wheel, so end users don't need a C compiler or any system headers installed.
 
 ## Putting it all together
 
@@ -120,7 +122,7 @@ With the IOKit bindings and SMC control wrapped in Python via CFFI, the tool aut
 
 The key idea is that the Mac stays plugged in the entire time. The SMC keys let the tool force the battery to discharge even while connected to power, and then re-enable charging when it's time to fill back up. That means I could just start it, walk away, and let it loop unattended for days. No unplugging, no babysitting. It drains to 5%, charges back to 95%, checks health, and repeats. The program stops itself once it hits the 79% target, re-enabling normal charging on exit.
 
-One thing to do before running this: turn off [Optimized Battery Charging](https://support.apple.com/en-ca/guide/mac-help/mchlfc3b7879/mac) in System Settings > Battery. macOS learns your charging habits and will cap the charge at 80% if it thinks you're going to stay plugged in. That directly fights what we're trying to do here, since the tool needs to charge all the way up to 95% to get a full depth-of-discharge cycle. Unfortunately there's no way to disable this programmatically. It's managed by `PowerUIAgent`, a higher-level macOS service that uses ML to predict your charging patterns, and it's not exposed through IOKit or the SMC. Some developers have [tried using `IOPMAssertionCreateWithName` with a `ChargeInhibit` flag](https://forums.macrumors.com/threads/program-to-disable-charging.1667538/), but macOS ignores it. This is a one-time manual step. I also used the open source [Caffeine](https://formulae.brew.sh/cask/caffeine) app to keep the Mac from going to sleep during the cycling process, since a sleeping Mac will pause the discharge.
+One thing to do before running this: turn off [Optimized Battery Charging](https://support.apple.com/en-ca/guide/mac-help/mchlfc3b7879/mac) in System Settings > Battery. macOS learns your charging habits and will cap the charge at 80% if it thinks you're going to stay plugged in. That directly fights what we're trying to do here, since the tool needs to charge all the way up to 95% to get a full depth-of-discharge cycle. Unfortunately there's no way to disable this programmatically, but it's only a one-time manual step. I also used the open source [Caffeine](https://formulae.brew.sh/cask/caffeine) app to keep the Mac from going to sleep during the cycling process, since a sleeping Mac will pause the discharge.
 
 ## Results
 
@@ -134,4 +136,10 @@ The degradation wasn't perfectly linear. Early cycles chipped away at about 0.02
 
 ---
 
-<span id="pyobject"><sup>1</sup></span> [PyObject](https://docs.python.org/3/c-api/structures.html#c.PyObject) is the base C struct that represents every Python object at the C level. "Everything in Python is an object" sounds philosophical until you're manually incrementing reference counts on one.
+<span id="pyobject">
+  <sup>1</sup>
+</span>
+[PyObject](https://docs.python.org/3/c-api/structures.html#c.PyObject) is the
+base C struct that represents every Python object at the C level. "Everything in
+Python is an object" sounds philosophical until you're manually incrementing
+reference counts on one.
