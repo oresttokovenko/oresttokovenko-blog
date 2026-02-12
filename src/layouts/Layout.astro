@@ -8,14 +8,18 @@ import { ClientRouter } from "astro:transitions";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
   showFooter?: boolean;
 }
 
 const {
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
+  image,
   showFooter = true,
 } = Astro.props;
+
+const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
 ---
 
 <!doctype html>
@@ -38,11 +42,13 @@ const {
     <meta property="og:url" content={Astro.url} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_TITLE} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
 
     <!-- Twitter Card tags -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
 
     <!-- RSS Feed Autodiscovery -->
     <link

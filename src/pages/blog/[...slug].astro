@@ -21,7 +21,7 @@ if (entry === undefined) {
 const { Content } = await render(entry);
 ---
 
-<Layout title={`${entry.data.title} | ${SITE_TITLE}`}>
+<Layout title={`${entry.data.title} | ${SITE_TITLE}`} description={entry.data.description} image={entry.data.ogImage}>
   <div style="background-color: rgb(238, 230, 210);">
     <!-- WIP Banner -->
     {entry.data.wip && <WIPBanner />}

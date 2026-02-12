@@ -53,6 +53,30 @@ hr {
   border-color: #2218d6;
 }
 
+/* Table card styling */
+.prose table {
+  background-color: rgb(245, 241, 233);
+  border-radius: 0.5rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.prose th,
+.prose td {
+  border: none;
+  border-bottom: 1px solid rgb(220, 214, 200);
+  padding: 0.75rem 1rem;
+}
+
+.prose thead th {
+  border-bottom: 2px solid rgb(200, 194, 178);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
 /* Make Typst SVG diagrams responsive */
 .typst-doc {
   max-width: 100%;
