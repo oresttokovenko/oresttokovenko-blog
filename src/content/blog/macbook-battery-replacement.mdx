@@ -148,7 +148,7 @@ With the IOKit bindings and SMC control wrapped in Python via CFFI, the tool aut
 
 The key idea is that the Mac stays plugged in the entire time. The SMC keys let the tool force the battery to discharge even while connected to power, and then re-enable charging when it's time to fill back up. That means I could just start it, walk away, and let it loop unattended for days. No unplugging, no babysitting. It drains to 5%, charges back to 95%, checks health, and repeats. The program stops itself once it hits the 79% target, re-enabling normal charging on exit.
 
-Since I'd already migrated to the M4, I factory reset the M1, installed [uv](https://docs.astral.sh/uv/), and ran `sudo uvx battery-tool`. That's it. Here's what it looks like in the terminal (yes, that's the default macOS Terminal.app on a fresh install), each line is a structured log entry<sup>[2](#structlog)</sup> with the current battery percentage, health, capacity, and cycle count. The full logs are in [this gist](TODO) if you want to see every cycle.
+Since I'd already migrated to the M4, I factory reset the M1, installed [uv](https://docs.astral.sh/uv/), and ran `sudo uvx battery-tool`. That's it. Here's what it looks like in the terminal (yes, that's the default macOS Terminal.app on a fresh install), each line is a structured log entry<sup>[2](#structlog)</sup> with the current battery percentage, health, capacity, and cycle count. The full logs are in [this gist](https://gist.github.com/oresttokovenko/937cbde4029d5964d432b86848f77fa1) if you want to see every cycle.
 
 <Image
   src={terminalScreenshot}
