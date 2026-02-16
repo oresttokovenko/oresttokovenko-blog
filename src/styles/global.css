@@ -44,6 +44,21 @@ code {
   @apply font-mono text-sm;
 }
 
+/* Line numbers via CSS counters on Shiki .line spans */
+pre > code {
+  counter-reset: line;
+}
+
+pre > code > .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1.5ch;
+  text-align: right;
+  color: rgb(100, 110, 130);
+}
+
 :not(pre) > code {
   @apply rounded px-1.5 py-0.5;
   background-color: rgb(224, 214, 190);

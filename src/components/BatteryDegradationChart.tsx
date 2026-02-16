@@ -10,24 +10,26 @@ import {
 } from "recharts";
 
 const data = [
-  { cycle: 800, health: 81.0 },
-  { cycle: 805, health: 80.92 },
-  { cycle: 810, health: 80.85 },
-  { cycle: 815, health: 80.76 },
-  { cycle: 820, health: 80.68 },
-  { cycle: 825, health: 80.55 },
-  { cycle: 830, health: 80.47 },
-  { cycle: 835, health: 80.34 },
-  { cycle: 840, health: 80.21 },
-  { cycle: 845, health: 80.1 },
-  { cycle: 850, health: 79.95 },
-  { cycle: 855, health: 79.82 },
-  { cycle: 860, health: 79.68 },
-  { cycle: 865, health: 79.53 },
-  { cycle: 870, health: 79.4 },
-  { cycle: 875, health: 79.25 },
-  { cycle: 880, health: 79.1 },
-  { cycle: 885, health: 78.93 },
+  { cycle: 700, health: 81.8 },
+  { cycle: 705, health: 81.7 },
+  { cycle: 710, health: 81.6 },
+  { cycle: 715, health: 81.49 },
+  { cycle: 720, health: 81.38 },
+  { cycle: 725, health: 81.26 },
+  { cycle: 730, health: 81.14 },
+  { cycle: 735, health: 81.01 },
+  { cycle: 740, health: 80.88 },
+  { cycle: 745, health: 80.74 },
+  { cycle: 750, health: 80.59 },
+  { cycle: 755, health: 80.44 },
+  { cycle: 760, health: 80.28 },
+  { cycle: 765, health: 80.11 },
+  { cycle: 770, health: 79.93 },
+  { cycle: 775, health: 79.74 },
+  { cycle: 780, health: 79.54 },
+  { cycle: 785, health: 79.33 },
+  { cycle: 790, health: 79.11 },
+  { cycle: 795, health: 78.88 },
 ];
 
 const accent = "#2218d6";
@@ -60,7 +62,7 @@ export default function BatteryDegradationChart() {
             }}
           />
           <YAxis
-            domain={[78.5, 81.5]}
+            domain={[78.5, 82.5]}
             stroke="#6b7280"
             tick={{ fontSize: 11 }}
             tickFormatter={(v: number) => `${v}%`}

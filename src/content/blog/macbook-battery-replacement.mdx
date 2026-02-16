@@ -15,6 +15,7 @@ import batteryFlowchart from "@/assets/typst/battery-tool-flowchart.typ?raw";
 import smcStack from "@/assets/typst/smc-stack-diagram.typ?raw";
 import smcChip from "@/assets/typst/smc-chip-diagram.typ?raw";
 import BatteryDegradationChart from "@/components/BatteryDegradationChart.tsx";
+import terminalScreenshot from "@/assets/screenshot_battery-tool.jpg";
 
 <Image
   src={batteryImage}
@@ -24,7 +25,7 @@ import BatteryDegradationChart from "@/components/BatteryDegradationChart.tsx";
   width={800}
 />
 
-After upgrading to an M4 MacBook Pro 16-inch, I wanted to sell my old M1 MacBook Pro 16-inch to offset some of the cost. Before listing it I did the usual checks: cosmetics, storage, battery. The battery health was at 81%. Not terrible, but buyers notice that kind of thing. Then I remembered I still had AppleCare Plus on it and looked up the replacement policy. Apple will swap your battery for free if the maximum capacity drops to 79% or below before your plan expires. Selling a MacBook with a fresh battery is a completely different proposition than selling one at 81%. My AppleCare had a few weeks left. I needed 2%.
+After upgrading to an M4 MacBook Pro 16-inch, I wanted to sell my old M1 MacBook Pro 16-inch to offset some of the cost. Before listing it I did the usual checks: cosmetics, storage, battery. The battery health was at 82%. Not terrible, but buyers notice that kind of thing. Then I remembered I still had AppleCare Plus on it and looked up the replacement policy. Apple will swap your battery for free if the maximum capacity drops to 79% or below before your plan expires. Selling a MacBook with a fresh battery is a completely different proposition than selling one at 82%. My AppleCare had a few weeks left. I needed 3%.
 
 Here's how I killed the battery on purpose and got Apple to replace it for free. The tool is [open source on GitHub](https://github.com/oresttokovenko/battery-tool).
 
@@ -40,7 +41,7 @@ Here's a sample of the SMC key interface. A given Mac can have [hundreds of keys
   <Typst code={smcChip} />
 </div>
 
-One important caveat: this approach only works on [Apple Silicon Macs](https://support.apple.com/en-us/116943) (M1 and later). The `CH0B`/`CH0C`/`CH0I` keys were reverse-engineered on M1 machines and worked across M-series generations, but Apple's macOS 15.7+ firmware [replaced them](https://github.com/actuallymentor/battery/pull/388) with a new set of keys: `CHTE` for charging control and `CHIE` for forced discharge. The tool detects which keys your machine supports at startup by attempting to read each one via `SMCReadKey` - if the key doesn't exist, the call returns a non-zero error code and the tool falls back to the legacy set.
+One important caveat: this approach only works on [Apple Silicon Macs](https://support.apple.com/en-us/116943) (M1 and later). The `CH0B`/`CH0C`/`CH0I` keys were reverse-engineered on M1 machines and worked across M-series generations, but Apple's macOS 15.7+ firmware [replaced them](https://github.com/actuallymentor/battery/pull/388) with a new set of keys: `CHTE` for charging control and `CHIE` for forced discharge. Nothing to worry about though, this tool detects which keys your machine supports at startup by attempting to read each one, if the key doesn't exist, the call returns a non-zero error code and the tool falls back to the legacy set.
 
 ## The math
 
@@ -50,7 +51,9 @@ Apple defines battery health as the ratio of current max capacity to the origina
   <Typst code={batteryFormula} />
 </div>
 
-My M1 MacBook Pro 16-inch reported a `DesignCapacity` of 8694 mAh, so I needed my max capacity to drop below 6868 mAh to hit that 79% threshold. The plan was simple: automate full charge-discharge cycles until the health drops enough. Apple's [design spec](https://support.apple.com/en-us/102888) says MacBook batteries retain 80% of original capacity at 1,000 charge cycles, which averages out to about 0.02% degradation per cycle. But that's for normal use with shallow discharges. [Battery University's research](https://www.batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries) on lithium-polymer cells shows that full depth-of-discharge cycles wear the battery about 6-7x faster than shallow ones. So I was expecting something closer to 0.04-0.08% per cycle. From 81% down to 79% is a 2% drop, which meant somewhere around 25-50 full loops.
+Fun fact: this formula doesn't match what Apple shows you in System Settings (this confused the heck out of me). My M4 MacBook Pro reports `AppleRawMaxCapacity` of 8342 mAh and `DesignCapacity` of 8579 mAh, which gives 97.24%. But System Report says "Maximum Capacity: 99%." Trying `AppleRawMaxCapacity / NominalChargeCapacity` (8342 / 8586) gives 97.16%, also not 99%. None of the simple ratios between exposed IOKit keys reproduce Apple's number. There's almost certainly calibration data or a cell aging model involved that isn't exposed. Either way, `AppleRawMaxCapacity / DesignCapacity` is the right formula here because it measures actual physical capacity, and that's what Apple's 80% warranty threshold is based on.
+
+Anwyways, so my good old M1 MacBook Pro 16-inch reported a `DesignCapacity` of 8694 mAh, so I needed my max capacity to drop below 6868 mAh to hit that 79% threshold. The plan was simple: automate full charge-discharge cycles until the health drops enough. Apple's [design spec](https://support.apple.com/en-us/102888) says MacBook batteries retain 80% of original capacity at 1,000 charge cycles, which averages out to about 0.02% degradation per cycle. My battery was already at about 700 cycles when I started, so in theory it had already used up most of its "easy" degradation. But that 0.02% figure is for normal use with shallow discharges. [Battery University's research](https://www.batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries) on lithium-polymer cells shows that full depth-of-discharge cycles wear the battery about 6-7x faster than shallow ones. So I was expecting something closer to 0.04-0.08% per cycle. From 81.8% down to 79% is a 2.8% drop, which meant somewhere around 35-70 full loops.
 
 ## Building the tool
 
@@ -62,42 +65,65 @@ Here's how deep the stack goes from a Python script down to the actual hardware:
 
 There are a few distinct capabilities the tool needs. Here's what each one requires and how to get it:
 
-- **Detect if a charger is connected** - [`IOKit/ps/IOPowerSources.h`](https://developer.apple.com/documentation/iokit/iopowersources_h) enumerates power sources and tells you whether AC is attached
-- **Read battery percentage** - [`IOKit/IOKitLib.h`](https://developer.apple.com/documentation/iokit/iokitlib_h) to query the `AppleSmartBattery` IOService for `CurrentCapacity`
-- **Read battery health** - same IOService via [`IOKit/ps/IOPSKeys.h`](https://developer.apple.com/documentation/iokit/iopskeys_h), keys `MaxCapacity` and `DesignCapacity`
+- **Detect if a charger is connected** - [`IOKit/IOKitLib.h`](https://developer.apple.com/documentation/iokit/iokitlib_h) to query the `AppleSmartBattery` IOService for `ExternalConnected`
+- **Read battery percentage** - same IOService, key `AppleRawCurrentCapacity`
+- **Read battery health** - same IOService, keys `AppleRawMaxCapacity` and `DesignCapacity`
 - **Disable/enable charging** - [smcFanControl's smc.c](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c), write to SMC keys `CH0B`/`CH0C` (legacy) or `CHTE` (macOS 15.7+)
 - **Force discharge while plugged in** - same smc.c, write to SMC key `CH0I` (legacy) or `CHIE`/`CH0J` (macOS 15.7+)
 
-All of the above return Apple's [`CoreFoundation`](https://developer.apple.com/documentation/corefoundation) types (`CFDictionaryRef`, `CFNumberRef`, `CFStringRef`, etc.). For the SMC side, the [smcFanControl](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c) project already has a well-tested C implementation for reading and writing SMC keys, so I pulled that in directly. For the battery data, I needed to roll my own C code using the IOKit headers above.
+The battery reads all come from one `IORegistryEntryCreateCFProperties` call, which dumps the entire `AppleSmartBattery` dictionary in one shot. For the SMC side, the [smcFanControl](https://github.com/hholtmann/smcFanControl/blob/master/smc-command/smc.c) project has a solid C implementation for reading and writing SMC keys, but it's structured as its own CLI tool with `main()` and argument parsing. I needed just the raw read/write calls, so I wrote a thin [wrapper](https://github.com/oresttokovenko/battery-tool/blob/main/c/smc_wrapper.c) around the low-level functions. Each call opens and closes its own SMC connection so the Python side never has to manage IOKit handles. For the battery data, I wrote my own C against `IOKitLib.h`.
 
-`AppleSmartBattery` isn't a header you include - it's a kernel driver that's part of Apple's [PowerManagement](https://opensource.apple.com/source/PowerManagement/PowerManagement-271.1/AppleSmartBatteryManager/AppleSmartBatteryManager.cpp.auto.html) kext. You discover it at runtime via `IOServiceMatching`. Apple published the [source code](https://opensource.apple.com/source/PowerManagement/PowerManagement-211.14/AppleSmartBatteryManager/AppleSmartBattery.cpp.auto.html) for older Intel-era versions, and while the Apple Silicon version isn't public, the IOService name and the dictionary keys it exposes have stayed the same:
+Here's roughly what the battery reading code looks like:
 
 ```c
-#include <IOKit/ps/IOPowerSources.h>
-#include <IOKit/ps/IOPSKeys.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
 
-typedef int milliamp_hours_t;
+typedef int MilliampHours;
 
-milliamp_hours_t get_max_capacity(void) {
-    CFTypeRef info = IOPSCopyPowerSourcesInfo();
-    CFArrayRef sources = IOPSCopyPowerSourcesList(info);
-    CFDictionaryRef battery = IOPSGetPowerSourceDescription(info,
-        CFArrayGetValueAtIndex(sources, 0));
+typedef struct {
+    MilliampHours current_capacity;
+    MilliampHours max_capacity;
+    MilliampHours design_capacity;
+    int cycle_count;
+    bool is_charging;
+    bool is_plugged_in;
+} BatteryInfo;
 
-    int capacity;
-    CFNumberGetValue(
-        CFDictionaryGetValue(battery, CFSTR(kIOPSMaxCapacityKey)),
-        kCFNumberIntType, &capacity);
+BatteryInfo FetchBatteryInfo(void) {
+  BatteryInfo info = {0};
 
-    CFRelease(sources);
-    CFRelease(info);
-    return capacity;
+  io_service_t entry = IOServiceGetMatchingService(
+      kIOMainPortDefault, IOServiceMatching(kAppleSmartBattery));
+  if (entry == IO_OBJECT_NULL) {
+    return info;
+  }
+
+  CFMutableDictionaryRef properties;
+  kern_return_t result = IORegistryEntryCreateCFProperties(
+      entry, &properties, kCFAllocatorDefault, 0);
+  IOObjectRelease(entry);
+  if (result != kIOReturnSuccess) {
+    return info;
+  }
+
+  GetDictInt(properties, kCurrentCapacityKey, &info.current_capacity,
+             kCFNumberIntType);
+  GetDictInt(properties, kMaxCapacityKey, &info.max_capacity, kCFNumberIntType);
+  GetDictInt(properties, kDesignCapacityKey, &info.design_capacity,
+             kCFNumberIntType);
+  GetDictInt(properties, kCycleCountKey, &info.cycle_count, kCFNumberIntType);
+  GetDictBool(properties, kIsChargingKey, &info.is_charging);
+  GetDictBool(properties, kExternalConnectedKey, &info.is_plugged_in);
+
+  CFRelease(properties);
+  return info;
 }
 ```
 
 ## Calling C from Python
 
-With the C side figured out, I needed to wrap these IOKit and SMC calls so I could use them from Python. Python is just a nice front end for C libraries anyway - half the standard library is C under the hood - and writing a CLI with argument parsing, logging, and a sleep loop is a lot more pleasant in Python than in raw C. There are three main options for bridging the two, and they each make different trade-offs:
+With the C side figured out, I needed to wrap these IOKit and SMC calls so I could use them from Python. Python is just a nice front end for C libraries anyway - half the standard library is C under the hood, and writing a CLI with argument parsing, logging, and a sleep loop is a lot more pleasant in Python than in C, even though I as using the _ultra_ modern C23. There are three main options for bridging the two languages, and they each make different trade-offs:
 
 | Feature                  | [Python C API](https://docs.python.org/3/c-api/) | [CFFI](https://cffi.readthedocs.io/) | [Cython](https://cython.readthedocs.io/) |
 | ------------------------ | ------------------------------------------------ | ------------------------------------ | ---------------------------------------- |
@@ -110,7 +136,7 @@ With the C side figured out, I needed to wrap these IOKit and SMC calls so I cou
 | **Boilerplate**          | High (PyMethodDef, ref counting)                 | Low (declare and call)               | Medium (.pyx wrappers)                   |
 | **Performance**          | Fastest                                          | Fast                                 | Fast                                     |
 
-I really wanted an excuse to use Cython because it sounds like a Pokémon evolution of Python, but CFFI was the right call. For a small project like this where I'm wrapping a handful of IOKit and SMC calls, the minimal boilerplate wins out. You declare the C functions as strings (yes this is gross) and CFFI handles the rest. The trade-off is no syntax highlighting or IDE support for those declarations, and a runtime dependency on the CFFI package. Both the `smc.c` code and my custom IOKit battery code get compiled together and shipped as a precompiled Python wheel, so end users don't need a C compiler or any system headers installed.
+I really wanted an excuse to use Cython because it sounds like a Pokémon evolution of Python, but CFFI was the right call. For a small project like this where I'm wrapping a handful of IOKit and SMC calls, the minimal boilerplate wins out. You declare the C functions as strings (yes this is gross) and CFFI handles the rest. The trade-off is no syntax highlighting or IDE support for those declarations, and a runtime dependency on the CFFI package. I wrote a `.pyi` stub file so the Python side still gets type hints for the C functions. First time I've ever had a legitimate reason to create one of those. Both the `smc.c` code and my custom IOKit battery code get compiled together and shipped as a precompiled Python wheel, so end users don't need a C compiler or any system headers installed.
 
 ## Putting it all together
 
@@ -122,24 +148,30 @@ With the IOKit bindings and SMC control wrapped in Python via CFFI, the tool aut
 
 The key idea is that the Mac stays plugged in the entire time. The SMC keys let the tool force the battery to discharge even while connected to power, and then re-enable charging when it's time to fill back up. That means I could just start it, walk away, and let it loop unattended for days. No unplugging, no babysitting. It drains to 5%, charges back to 95%, checks health, and repeats. The program stops itself once it hits the 79% target, re-enabling normal charging on exit.
 
+Since I'd already migrated to the M4, I factory reset the M1, installed [uv](https://docs.astral.sh/uv/), and ran `sudo uvx battery-tool`. That's it. Here's what it looks like in the terminal (yes, that's the default macOS Terminal.app on a fresh install), each line is a structured log entry<sup>[2](#structlog)</sup> with the current battery percentage, health, capacity, and cycle count. The full logs are in [this gist](TODO) if you want to see every cycle.
+
+<Image
+  src={terminalScreenshot}
+  alt="battery-tool running in the terminal, showing structured log output of battery readings during a discharge cycle"
+  class="mx-auto my-4 rounded-lg shadow-lg"
+  style="max-width: 700px;"
+  width={1400}
+/>
+
 One thing to do before running this: turn off [Optimized Battery Charging](https://support.apple.com/en-ca/guide/mac-help/mchlfc3b7879/mac) in System Settings > Battery. macOS learns your charging habits and will cap the charge at 80% if it thinks you're going to stay plugged in. That directly fights what we're trying to do here, since the tool needs to charge all the way up to 95% to get a full depth-of-discharge cycle. Unfortunately there's no way to disable this programmatically, but it's only a one-time manual step. I also used the open source [Caffeine](https://formulae.brew.sh/cask/caffeine) app to keep the Mac from going to sleep during the cycling process, since a sleeping Mac will pause the discharge.
 
 ## Results
 
-I work with data, so naturally I had to track the degradation and put together a chart. To speed up each discharge cycle, I ran HDR YouTube videos on loop at full brightness - the display and GPU chew through battery much faster than an idle desktop. Starting at cycle 800 with 81% health, the tool ran for about 85 cycles over roughly a week and a half. Each cycle took 4-5 hours depending on what else was running. Here's how the health tracked over time:
+I work with data, so naturally I had to track the degradation and put together a chart. To speed up each discharge cycle, I ran HDR YouTube videos on loop at full brightness - the display and GPU chew through battery much faster than an idle desktop. Starting at cycle 700 with 81.8% health, the tool ran for about 95 cycles over roughly two weeks. Each cycle took 4-5 hours depending on what else was running. Here's how the health tracked over time:
 
 <div class="my-6">
   <BatteryDegradationChart client:load />
 </div>
 
-The degradation wasn't perfectly linear. Early cycles chipped away at about 0.02% each, but as the battery wore down the rate picked up closer to 0.04% per cycle, consistent with what Battery University's research predicts for deep discharge cycling. The tool stopped itself at cycle 885 when health hit 78.93%, safely below the 79% threshold. I booked a Genius Bar appointment, they ran diagnostics, confirmed the battery was below spec, and swapped it on the spot under AppleCare. Total cost: zero dollars and about ten days of patience.
+The degradation wasn't perfectly linear. Early cycles chipped away at about 0.02% each, but as the battery wore down the rate picked up closer to 0.04% per cycle, consistent with what Battery University's research predicts for deep discharge cycling. The tool stopped itself at cycle 795 when health hit 78.88%, safely below the 79% threshold. I booked a Genius Bar appointment, they ran diagnostics, confirmed the battery was below spec, and swapped it on the spot under AppleCare. Total cost: zero dollars and about two weeks of patience.
 
 ---
 
-<span id="pyobject">
-  <sup>1</sup>
-</span>
-[PyObject](https://docs.python.org/3/c-api/structures.html#c.PyObject) is the
-base C struct that represents every Python object at the C level. "Everything in
-Python is an object" sounds philosophical until you're manually incrementing
-reference counts on one.
+<span id="pyobject"><sup>1</sup></span> [PyObject](https://docs.python.org/3/c-api/structures.html#c.PyObject) is the base C struct that represents every Python object at the C level. "Everything in Python is an object" sounds philosophical until you're manually incrementing reference counts on one.
+
+<span id="structlog"><sup>2</sup></span> The logs come from [structlog](https://www.structlog.org/), which outputs key-value pairs instead of free-form strings. Every log line is machine-parseable out of the box, so I could pipe the output through `jq` or load it into a DataFrame without writing regex. Standard library `logging` can technically do structured output, but structlog makes it the default instead of something you have to fight for.

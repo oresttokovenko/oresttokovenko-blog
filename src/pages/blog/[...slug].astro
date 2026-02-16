@@ -49,14 +49,14 @@ const { Content } = await render(entry);
           </div>
 
           <h1
-            class="font-spectral mb-6 text-xl font-bold tracking-tight text-gray-900 md:text-2xl lg:text-3xl"
+            class="font-spectral mb-6 text-xl font-bold text-balance text-gray-900 md:text-2xl lg:text-3xl"
           >
             {entry.data.title}
           </h1>
 
           {
             entry.data.description && (
-              <p class="font-spectral mx-auto mt-4 max-w-2xl text-base text-gray-700">
+              <p class="font-spectral mx-auto mt-4 max-w-2xl text-base text-pretty text-gray-700">
                 {entry.data.description}
               </p>
             )
