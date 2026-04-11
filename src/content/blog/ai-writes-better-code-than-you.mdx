@@ -1,0 +1,21 @@
+---
+title: "AI Writes Better Code Than You but Only Math Can Prove It's Right"
+publishDate: 2026-04-10
+description: "Why using model checkers like Quint, TLA+, and Alloy can reduce bugs and make your LLM-generated code more reliable"
+tags: ["formal-methods", "AI", "software-engineering"]
+wip: true
+---
+
+import { Image } from "astro:assets";
+import { loremIpsum } from "lorem-ipsum";
+import gladiatorAbacus from "@/assets/gladiator_abacus_rgba.png";
+
+<Image
+  src={gladiatorAbacus}
+  alt="Gladiator with an abacus"
+  class="mx-auto my-4"
+  style="max-width: 286px;"
+  width={716}
+/>
+
+{loremIpsum({ count: 5, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}

@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import { SITE_TITLE } from "../../consts";
 import Layout from "../../layouts/Layout.astro";
+import { ArrowUpRight } from "lucide-react";
 
 // Get all blog posts and sort by publish date
 const posts = await getCollection("blog");
@@ -42,7 +43,10 @@ const sortedPosts = posts.sort(
 
                   <div class="flex-1">
                     <h2 class="font-spectral mb-2 text-xl font-bold text-balance text-gray-900 transition-colors group-hover:text-gray-700 md:text-2xl">
-                      {post.data.title}
+                      <span class="inline-flex items-center gap-1.5">
+                        {post.data.title}
+                        <ArrowUpRight className="size-5 -translate-x-1 translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
+                      </span>
                     </h2>
 
                     {post.data.description && (
@@ -51,18 +55,6 @@ const sortedPosts = posts.sort(
                       </p>
                     )}
 
-                    {post.data.tags && post.data.tags.length > 0 && (
-                      <div class="flex flex-wrap gap-2">
-                        {post.data.tags.map((tag) => (
-                          <span
-                            class="font-ibm px-2 py-1 text-xs font-medium text-white"
-                            style="background-color: rgb(22, 31, 116);"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </a>
