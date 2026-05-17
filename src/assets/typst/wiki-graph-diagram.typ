@@ -7,11 +7,14 @@
   ```dot
   graph wiki {
     layout=neato
+    mode=sgd
+    smoothing=spring
     overlap=prism
     splines=true
     bgcolor="transparent"
-    sep="+25"
+    sep="+45"
     start=42
+    forcelabels=true
 
     node [
       shape=circle,
@@ -32,38 +35,41 @@
       penwidth=0.5
     ]
 
-    // projects (larger filled)
-    "pricing-revamp" [width=0.26, height=0.26, xlabel="pricing-revamp"]
-    "data-platform-migration" [width=0.26, height=0.26, xlabel="data-platform-migration"]
-    "customer-portal-v2" [width=0.26, height=0.26, xlabel="customer-portal-v2"]
+    // Node size is base 0.15 + 0.012 per edge (degree centrality).
+    // All nodes share the same scale; bigger dot = more connections.
+
+    // projects
+    "pricing-revamp" [width=0.258, height=0.258, xlabel="pricing-revamp"] // 9 edges
+    "data-platform-migration" [width=0.198, height=0.198, xlabel="data-platform-migration"] // 4
+    "customer-portal-v2" [width=0.186, height=0.186, xlabel="customer-portal-v2"] // 3
 
     // DRIs (hollow)
-    "sarah-chen" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.2, height=0.2, xlabel="sarah-chen"]
-    "marcus-lee" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.2, height=0.2, xlabel="marcus-lee"]
-    "priya-shah" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.2, height=0.2, xlabel="priya-shah"]
+    "sarah-chen" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.234, height=0.234, xlabel="sarah-chen"] // 7
+    "marcus-lee" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.222, height=0.222, xlabel="marcus-lee"] // 6
+    "priya-shah" [style=solid, fillcolor="transparent", color="#2218d6", penwidth=1.0, width=0.186, height=0.186, xlabel="priya-shah"] // 3
 
     // services
-    "billing-svc" [xlabel="billing-svc"]
-    "auth-api" [xlabel="auth-api"]
-    "analytics-pipeline" [xlabel="analytics-pipeline"]
+    "billing-svc" [width=0.27, height=0.27, xlabel="billing-svc"] // 10
+    "auth-api" [width=0.21, height=0.21, xlabel="auth-api"] // 5
+    "analytics-pipeline" [width=0.21, height=0.21, xlabel="analytics-pipeline"] // 5
 
     // repos
-    "monorepo-frontend" [xlabel="monorepo-frontend"]
-    "infra-terraform" [xlabel="infra-terraform"]
+    "monorepo-frontend" [width=0.186, height=0.186, xlabel="monorepo-frontend"] // 3
+    "infra-terraform" [width=0.174, height=0.174, xlabel="infra-terraform"] // 2
 
     // ADRs / concepts / runbooks
-    "adr-024-postgres-17" [xlabel="adr-024-postgres-17"]
-    "slo-budget" [xlabel="slo-budget"]
-    "runbook-oncall" [xlabel="runbook-oncall"]
+    "adr-024-postgres-17" [width=0.222, height=0.222, xlabel="adr-024-postgres-17"] // 6
+    "slo-budget" [width=0.198, height=0.198, xlabel="slo-budget"] // 4
+    "runbook-oncall" [width=0.222, height=0.222, xlabel="runbook-oncall"] // 6
 
     // meetings
-    "2026-04-01-pricing-revamp-sync" [xlabel="2026-04-01-pricing-revamp-sync"]
-    "2026-04-08-pricing-revamp-sync" [xlabel="2026-04-08-pricing-revamp-sync"]
-    "2026-04-15-pricing-revamp-sync" [xlabel="2026-04-15-pricing-revamp-sync"]
+    "2026-04-01-pricing-revamp-sync" [width=0.198, height=0.198, xlabel="2026-04-01-pricing-revamp-sync"] // 4
+    "2026-04-08-pricing-revamp-sync" [width=0.21, height=0.21, xlabel="2026-04-08-pricing-revamp-sync"] // 5
+    "2026-04-15-pricing-revamp-sync" [width=0.198, height=0.198, xlabel="2026-04-15-pricing-revamp-sync"] // 4
 
     // design docs
-    "pricing-revamp-design" [xlabel="pricing-revamp-design"]
-    "billing-svc-design" [xlabel="billing-svc-design"]
+    "pricing-revamp-design" [width=0.21, height=0.21, xlabel="pricing-revamp-design"] // 5
+    "billing-svc-design" [width=0.21, height=0.21, xlabel="billing-svc-design"] // 5
 
     // -- core project/service edges --
     "pricing-revamp" -- "sarah-chen"

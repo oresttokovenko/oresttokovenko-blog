@@ -9,6 +9,7 @@ import { Image } from "astro:assets";
 import { Typst } from "astro-typst/src/components";
 import { loremIpsum } from "lorem-ipsum";
 import QuoteCard from "@/components/QuoteCard.astro";
+import WikiGraph from "@/components/WikiGraph.tsx";
 import marcusAurelius from "@/assets/marcus_aurelius_rgba.png";
 import wikiGraph from "@/assets/typst/wiki-graph-diagram.typ?raw";
 
@@ -84,8 +85,8 @@ Migrate `billing-svc` from the legacy flat-rate model to usage-based tiers. Roll
 ## Key Ideas
 
 - Three-tier model (starter/growth/scale) priced on monthly active orgs.
-- Tier history backfills from billing events; gaps before 2025-Q4 default to flat-rate. ^[inferred]
-- Whether [[entities/customer-portal-v2]] needs new UI for tier display is unresolved. ^[ambiguous]
+- Tier history backfills from billing events. ^[inferred]
+- [[entities/customer-portal-v2]] UI changes still unresolved. ^[ambiguous]
 
 Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [[entities/priya-shah]] (reviewer).
 
@@ -106,9 +107,14 @@ Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [
 
 ## Notes connect like neurons
 
+<WikiGraph client:visible />
+
+{/\* Static typst version — kept around in case the interactive graph is overkill.
+
 <div class="my-6 flex justify-center">
   <Typst code={wikiGraph} />
 </div>
+*/}
 
 {loremIpsum({ count: 4, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
 

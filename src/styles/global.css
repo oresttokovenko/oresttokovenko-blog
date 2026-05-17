@@ -140,9 +140,17 @@ code::after {
   border-radius: 2px;
 }
 
-.ob-footnote {
+.ob-inferred {
   color: #ffcc80;
   background-color: rgba(255, 204, 128, 0.14);
+  padding: 0 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.ob-ambiguous {
+  color: #ff7b72;
+  background-color: rgba(255, 123, 114, 0.14);
   padding: 0 5px;
   border-radius: 4px;
   font-size: 0.85em;

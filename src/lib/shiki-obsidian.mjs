@@ -5,13 +5,16 @@
  * Patterns:
  *   ![[embed]]    → <span class="ob-embed">
  *   [[wikilink]]  → <span class="ob-wikilink">
- *   ^[footnote]   → <span class="ob-footnote">
+ *   ^[inferred]   → <span class="ob-inferred">
+ *   ^[ambiguous]  → <span class="ob-ambiguous">
+ *   yaml keys in frontmatter → <span class="ob-yaml-key">
  */
 
 const bodyPatterns = [
   { regex: /!\[\[[^\]\n]+\]\]/g, className: "ob-embed" },
   { regex: /(?<!!)\[\[[^\]\n]+\]\]/g, className: "ob-wikilink" },
-  { regex: /\^\[[^\]\n]+\]/g, className: "ob-footnote" },
+  { regex: /\^\[inferred\]/g, className: "ob-inferred" },
+  { regex: /\^\[ambiguous\]/g, className: "ob-ambiguous" },
 ];
 
 const yamlKeyPattern = {
