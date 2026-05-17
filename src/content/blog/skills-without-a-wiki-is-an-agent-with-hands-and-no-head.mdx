@@ -1,0 +1,126 @@
+---
+title: "Skills Without a Wiki Is an Agent With Hands and No Head"
+publishDate: 2026-05-16
+description: "Skills give your agent procedural memory, an LLM wiki gives it declarative memory, you need both, and Obsidian is where they meet"
+wip: true
+---
+
+import { Image } from "astro:assets";
+import { Typst } from "astro-typst/src/components";
+import { loremIpsum } from "lorem-ipsum";
+import QuoteCard from "@/components/QuoteCard.astro";
+import marcusAurelius from "@/assets/marcus_aurelius_rgba.png";
+import wikiGraph from "@/assets/typst/wiki-graph-diagram.typ?raw";
+
+<Image
+  src={marcusAurelius}
+  alt="Marcus Aurelius"
+  class="mx-auto my-4"
+  style="max-width: 173px;"
+  width={346}
+/>
+
+{loremIpsum({ count: 5, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## Two kinds of memory
+
+{loremIpsum({ count: 3, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## Skills are the hands
+
+Reference: [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)
+
+{loremIpsum({ count: 3, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## The wiki has hands too
+
+Reference: [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki)
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## So what's the head?
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+Here's what one note in the graph looks like — `projects/pricing-revamp/pricing-revamp.md`, using the schema from [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki/blob/main/.skills/llm-wiki/SKILL.md):
+
+```markdown
+---
+title: Pricing Revamp
+category: projects
+tags: [billing, pricing, backend]
+aliases: [pricing-v2]
+relationships:
+  - target: "[[entities/billing-svc]]"
+    type: modifies
+  - target: "[[entities/sarah-chen]]"
+    type: owned_by
+  - target: "[[references/adr-024-postgres-17]]"
+    type: depends_on
+  - target: "[[projects/pricing-revamp/references/pricing-revamp-design]]"
+    type: described_by
+sources:
+  [
+    transcripts/2026-04-01-pricing-revamp-sync.txt,
+    transcripts/2026-04-08-pricing-revamp-sync.txt,
+    transcripts/2026-04-15-pricing-revamp-sync.txt,
+  ]
+summary: Migrate billing-svc from flat-rate to usage-based tiers; rollout gated on postgres-17 partitioning.
+provenance:
+  extracted: 0.81
+  inferred: 0.15
+  ambiguous: 0.04
+base_confidence: 0.78
+lifecycle: active
+lifecycle_changed: 2026-04-15
+created: 2026-03-15T00:00:00Z
+updated: 2026-04-15T16:30:00Z
+---
+
+# Pricing Revamp
+
+Migrate `billing-svc` from the legacy flat-rate model to usage-based tiers. Rollout depends on partitioning landing first.
+
+## Key Ideas
+
+- Three-tier model (starter/growth/scale) priced on monthly active orgs.
+- Tier history backfills from billing events; gaps before 2025-Q4 default to flat-rate. ^[inferred]
+- Whether [[entities/customer-portal-v2]] needs new UI for tier display is unresolved. ^[ambiguous]
+
+Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [[entities/priya-shah]] (reviewer).
+
+## Open Questions
+
+- Backfill strategy for tier history pre-2025-Q4
+- Migration latency budget vs [[concepts/slo-budget]]
+- Whether [[entities/customer-portal-v2]] needs UI changes
+
+## Sources
+
+- [[journal/2026-04-01-pricing-revamp-sync]] — kickoff
+- [[journal/2026-04-08-pricing-revamp-sync]] — design review
+- [[journal/2026-04-15-pricing-revamp-sync]] — locked [[references/adr-024-postgres-17]]
+```
+
+{loremIpsum({ count: 1, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## Notes connect like neurons
+
+<div class="my-6 flex justify-center">
+  <Typst code={wikiGraph} />
+</div>
+
+{loremIpsum({ count: 4, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+<QuoteCard
+  author="@nvk"
+  date="May 10, 2026"
+  url="https://x.com/nvk/status/2053314026373775525"
+>
+  <p>
+    seldomly im reminded whats like getting slop from llms without llm-wiki.
+  </p>
+  <p class="mt-3">
+    its a jump akin to using computers pre-internet, great calculator.
+  </p>
+</QuoteCard>

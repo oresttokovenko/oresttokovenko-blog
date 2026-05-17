@@ -11,6 +11,8 @@ import sitemap from "@astrojs/sitemap";
 
 import { typst } from "astro-typst";
 
+import { transformerObsidian } from "./src/lib/shiki-obsidian.mjs";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://oresttokovenko.com",
@@ -22,6 +24,12 @@ export default defineConfig({
       fontArgs: [{ fontPaths: ["src/assets/fonts"] }],
     }),
   ],
+
+  markdown: {
+    shikiConfig: {
+      transformers: [transformerObsidian()],
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],

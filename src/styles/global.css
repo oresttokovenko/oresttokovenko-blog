@@ -119,3 +119,35 @@ code::before,
 code::after {
   content: "" !important;
 }
+
+/* Obsidian-flavored markdown syntax highlighting (via shiki-obsidian transformer) */
+.ob-wikilink {
+  color: #b5b0ff;
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+  padding-bottom: 1px;
+}
+
+.ob-wikilink:hover {
+  color: #d8d4ff;
+  border-bottom-style: solid;
+}
+
+.ob-embed {
+  color: #b5b0ff;
+  background-color: rgba(155, 145, 255, 0.12);
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.ob-footnote {
+  color: #ffcc80;
+  background-color: rgba(255, 204, 128, 0.14);
+  padding: 0 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.ob-yaml-key {
+  color: #79b8ff;
+}
