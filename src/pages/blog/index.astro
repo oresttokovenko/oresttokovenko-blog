@@ -38,15 +38,14 @@ const sortedPosts = posts.sort(
                       year: "numeric",
                       month: "short",
                       day: "numeric",
+                      timeZone: "UTC",
                     })}
                   </time>
 
                   <div class="flex-1">
-                    <h2 class="font-spectral mb-2 text-xl font-bold text-balance text-gray-900 transition-colors group-hover:text-gray-700 md:text-2xl">
-                      <span class="inline-flex items-center gap-1.5">
-                        {post.data.title}
-                        <ArrowUpRight className="size-5 -translate-x-1 translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
-                      </span>
+                    <h2 class="font-spectral mb-2 flex items-start justify-between gap-4 text-xl font-bold text-balance text-gray-900 transition-colors group-hover:text-gray-700 md:text-2xl">
+                      <span>{post.data.title}</span>
+                      <ArrowUpRight className="size-5 mt-1 flex-shrink-0 -translate-x-1 translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
                     </h2>
 
                     {post.data.description && (

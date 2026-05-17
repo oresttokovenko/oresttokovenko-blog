@@ -1,13 +1,12 @@
 ---
 title: "Skills Without a Wiki Is an Agent With Hands and No Head"
-publishDate: 2026-05-16
+publishDate: 2026-05-17
 description: "Skills give your agent procedural memory, an LLM wiki gives it declarative memory, you need both, and Obsidian is where they meet"
-wip: true
+wip: false
 ---
 
 import { Image } from "astro:assets";
 import { Typst } from "astro-typst/src/components";
-import { loremIpsum } from "lorem-ipsum";
 import QuoteCard from "@/components/QuoteCard.astro";
 import WikiGraph from "@/components/WikiGraph.tsx";
 import marcusAurelius from "@/assets/marcus_aurelius_rgba.png";
@@ -21,29 +20,56 @@ import wikiGraph from "@/assets/typst/wiki-graph-diagram.typ?raw";
   width={346}
 />
 
-{loremIpsum({ count: 5, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+The first time I really noticed it was on the fourth conversation in a row where I asked the agent to deploy a small Kafka consumer to staging. It went straight for a kubeconfig, then queued up a `kubectl apply`. Reasonable defaults. Wrong for our stack. We have an internal CLI that owns the whole deploy path: cluster access, namespace conventions, the sidecar wiring the mesh expects, the per-app config repo each service keeps, and the pipeline that renders the templates, diffs against the live cluster, and applies on your behalf. The cluster will technically let you `kubectl apply` your way past all of that, but downstream you've got mutating webhooks that will silently rewrite your resource requests from historic-usage heuristics, sidecar injection that no-ops because your labels don't match the platform's convention, and a pipeline that'll smash the whole thing back to the templated state on the next run. By turn three I'd type "remember, we don't deploy with `kubectl apply`, you use the internal CLI, target the staging environment, and let the pipeline render and apply on your behalf." By turn four I'd give up and paste the onboarding doc. The agent was sharp. It would happily produce a perfectly reasonable Deployment manifest, even add app-level retry middleware to a consumer that's already sitting behind a mesh that handles retries. It had no memory of any previous conversation, because it never does.
+
+`AGENTS.md` was supposed to help (That was the vision at least). It works for project-scoped context, but project-scoped is exactly the problem. Half of what I needed to tell the agent was about adjacent things. Who owns the upstream Kafka topic my consumer reads from. Why we landed on snapshot expiry plus weekly compaction for our Iceberg tables instead of the defaults. Whether the schema change someone was about to ship upstream would break my downstream consumer. None of that fit in a single project's `AGENTS.md`, and even if it did, the agent had no way to find it from any project that wasn't already pointing at it.
+
+So I wrote things down. Then I had to keep pointing the agent at the things I'd written. I had a `/docs` folder full of design docs and decision logs that the agent could read once I pasted them, but they were dead until I dragged them in. The static files weren't memory. They were just files. Memory is what the agent uses without being asked.
 
 ## Two kinds of memory
 
-{loremIpsum({ count: 3, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+Cognition has two stores.<sup>[1](#memory-systems)</sup> Procedural memory is _how to do things_: riding a bike, calling an API, writing a PR comment in your team's house style. It lives in the basal ganglia and the cerebellum, which is why you can ride a bike thirty years after you last rode one without consciously thinking about it. Declarative memory is _what you know_: facts, relationships, events. It lives in the hippocampus and the cortex, and is what fails when someone has amnesia in a movie.
+
+Agents have the same split. The skills they invoke are procedural. The notes and docs they read are declarative. Procedural memory generalizes across companies. A deploy script is a deploy script. Declarative memory doesn't generalize. The model has no way to know your services are called `billing-svc` and `auth-api` rather than `payments` and `identity`, or that your rate limiter is per-tenant rather than global. Fine-tuning could fix that in principle, but it's slow, expensive, and stale by the time the next ADR lands. The pragmatic option is to keep declarative memory outside the model, in a place it can read on demand. The skills side of that stack matured fast. The structured-context side did not, which is why every conversation still starts cold and every project context has to be reconstructed from scratch.
+
+The skills half of that stack is the easy half. It's gotten most of the recent attention, and the work shows. The hard half is what those skills act on. The [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki) framework is the cleanest example I've seen of what that hard half should look like, and the rest of this post is about it.
 
 ## Skills are the hands
 
-Reference: [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)
+Skills are the procedural code an agent runs to get things done. They follow the [Agent Skills specification](https://agentskills.io/specification), which means the same skill bundle works across Claude Code, Codex CLI, OpenCode, and any other agent that speaks the format. You write a skill once and your tooling speaks the same dialect across agents. Thank god the ecosystem is finally standardizing here: the Skills spec on one side, `AGENTS.md` on the other for project-scoped context. A year ago I had to rewrite the same `CLAUDE.md`, `.cursorrules`, and `.copilot-instructions` three different ways. Now the same files survive a tool switch.
 
-{loremIpsum({ count: 3, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+Most engineering orgs already have most of their skills, whether they call them that or not. A deploy script becomes a skill when it's wrapped in an agent-readable description. A runbook is a skill once the agent can execute its steps. The Skills spec is what makes them portable rather than tied to a single agent or a single project.
+
+Recall the Kafka consumer deploy from the start of this post. The obvious counter to that whole story is: just write a deploy skill. But skills are meant to teach one thing, usually one tool. Our deploy path touches the platform CLI, the sidecar, the cluster, the config repo, the pipeline, the service mesh, and three or four conventions per component. A skill that encoded all of that would be a wall of text the agent has to re-parse every time, and the moment any one piece changes, the skill rots. The cleaner split is small specific skills (invoke the platform CLI, check pipeline status, tail the deploy logs) plus a separate place for the context they're acting on. Picture the failure case to see the difference. The deploy throws an error I haven't seen before, and I ask the agent "who do I ping about this?" That's not a skill, it's a graph traversal: walk the `owned_by` edge from the failing service to the team's page, pull the Slack channel right out of the team's frontmatter. No grepping six outdated wikis, no "who owns this again?" in Slack search. The skill that ran the deploy doesn't need to know any of that. The structured place does.
+
+What's still rare is skills shipped as installable bundles rather than scattered scripts and tribal knowledge. That part of the stack is real and getting more mature every quarter. It's still not the head.
+
+<QuoteCard
+  author="@nvk"
+  date="May 10, 2026"
+  url="https://x.com/nvk/status/2053314026373775525"
+>
+  <p>
+    seldomly im reminded whats like getting slop from llms without llm-wiki.
+  </p>
+  <p class="mt-3">
+    its a jump akin to using computers pre-internet, great calculator.
+  </p>
+</QuoteCard>
 
 ## The wiki has hands too
 
-Reference: [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki)
+Worth saying out loud before going further: `obsidian-wiki` ships its own skills too. `wiki-update`, `wiki-query`, `wiki-ingest`, `cross-linker`. From a strict typology these are hands, in the same category as everything in the previous section. An agent uses them to interact with the vault the same way it uses any other skill to interact with any other system.
 
-{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+The skills aren't what makes `obsidian-wiki` the head. They're how the agent reaches into it. The head is the architecture they reach into: a three-layer separation between raw sources, a compiled wiki, and the schema that governs both. That's where the cognition lives.
 
 ## So what's the head?
 
-{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+The architecture. The schema. The fact that knowledge isn't just stored, it's _organized_ under rules: every page has a category from a fixed taxonomy, every page has a title and a summary and a confidence score and a lifecycle state, every claim on every page is tagged with whether it was extracted from a source, inferred by the model, or flagged as ambiguous. Pages link to each other through typed relationships. The graph is queryable in the sense that an agent can ask "what depends on what" and get a real answer, not a vibes-based grep.
 
-Here's what one note in the graph looks like — `projects/pricing-revamp/pricing-revamp.md`, using the schema from [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki/blob/main/.skills/llm-wiki/SKILL.md):
+The head isn't the code that reads the wiki. The head is the wiki. The skills are the appendages reaching into it.
+
+Here's what one note in the graph looks like - `projects/pricing-revamp.md`, using the schema from [Ar9av/obsidian-wiki](https://github.com/Ar9av/obsidian-wiki/blob/main/.skills/llm-wiki/SKILL.md):
 
 ```markdown
 ---
@@ -103,9 +129,31 @@ Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [
 - [[journal/2026-04-15-pricing-revamp-sync]] — locked [[references/adr-024-postgres-17]]
 ```
 
-{loremIpsum({ count: 1, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+That's one node out of thousands. The specific shape of the schema matters less than the fact that there _is_ a schema, with a defined vocabulary for categories, relationships, provenance, and lifecycle. Every page is a row in a typed table you can query. Every wikilink is a typed edge. None of this is metaphor. It's the literal data structure.
+
+The base schema is the floor. You build up from it with Obsidian templates: a schema for the schema that prescribes the frontmatter every new page of a given type should carry. At my company every service page carries a `business_unit` value, because a service might belong to Cash, Square, or Tidal, and the answer matters when something pages. The template enforces the field on creation, the wiki picks it up as a node attribute, and queries like "every service in Cash that depends on Snowflake" just work because the BU is structured data, not a mention buried in prose. The base spec is opinionated about structure. What you put inside is yours to decide.
+
+A page like this isn't trying to replace the runbook, the dev guide, or the codebase. Those are still the source of truth, and they move faster than any hand-maintained wiki page can keep up with. The page is the map. It tells the agent the runbook lives at this URL, the relevant config is at that path, the design doc is in this Drive folder, the schema is defined in this repo. The agent reads the page to find the canonical source, then goes and reads the canonical source. The wiki stays accurate by not trying to be the thing it points at.
+
+## The wiki is a queryable graph
+
+The note we just looked at is one form of the data: a human-readable page. The same data has a second form, a typed graph you can export and query like a database. The frontmatter properties become node attributes. The `relationships:` entries become labeled edges. The wikilinks become untyped edges. Once you export it, the wiki stops being an Obsidian-only thing and becomes something networkx, Gephi, Cytoscape, or Neo4j can work on. I reach for networkx first. It's effectively a Python superset of the others, and it converts in and out of their formats cleanly.
+
+This is where the value crosses from _good notes_ into _queryable knowledge_. Searching the vault textually gets you to the right page. Traversing the graph gets you to the right _answer_, even when that answer is three hops away and crosses categories.
+
+The `wiki-export` skill dumps every format you might want in one shot: `graph.json` in NetworkX node-link format, `graph.graphml` for Gephi or Cytoscape, `cypher.txt` for Neo4j, and a self-contained `graph.html` for poking around in the browser. The exporter is itself a skill in the same repo, so the wiki knows how to publish itself as a graph the same way it knows how to be written to.
+
+What you can ask now changes shape. Structural questions become trivial. PageRank gives you the actual hub nodes of your vault, ranked. Betweenness centrality gives you the _bridge_ nodes: the pages that, if they vanished, would disconnect chunks of the graph from each other. Community detection finds the implicit clusters your team has been working in without realizing.
+
+Pattern questions are where it gets interesting. Find every ADR that's `implements`-linked to a project that `depends_on` `entities/snowflake`. Find every service owned by someone on the platform team that hasn't had a runbook update in 90 days. Find every concept page with `^[ambiguous]` markers referenced by more than two projects. These are queries you couldn't write against a search index. They depend on edge _types_ and node attributes.
+
+The `relationships:` schema does the work. Each edge carries a `type`, so traversals stay specific. A page that says it `depends_on` `snowflake` is structurally different from a page that says it `replaces` `snowflake`, even though both contain the same wikilink in raw markdown. That distinction is what lets the wiki act like a knowledge graph rather than a dense pile of cross-linked text.
+
+This is also what makes autonomous research practical. I've been running Pi's auto-research plugin against my vault lately. You point an agent at a question, it goes hunting through context on its own, hops between pages along relevant edges, builds up an answer. With a typed graph underneath, the hunting stays deterministic. The agent walks `owned_by`, `depends_on`, `references` like rails, instead of falling into the "let me scroll `#platform-help` for an hour" loop you get when an agent has nothing structured to traverse. No babysitting. The same graph that makes my manual queries snappy keeps an autonomous agent's search bounded.
 
 ## Notes connect like neurons
+
+Here's a slice of a vault, rendered as the graph it actually is. The names are made up, but the shape is close to how I model my own at work.
 
 <WikiGraph client:visible />
 
@@ -116,17 +164,43 @@ Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [
   </div>
 )}
 
-{loremIpsum({ count: 4, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+A project entity, three DRIs, services and repos the project depends on, design docs, ADRs, meeting transcripts, runbooks. The most-referenced nodes aren't designated by anyone. They emerge from how many things link to them. `pricing-revamp` is big because nine other things reference it. `infra-terraform` is small because it has two. The graph reflects centrality directly, which means an agent walking it has a built-in sense of what matters and what doesn't.
+
+The connections aren't aesthetic. They're operational. When I ask my agent "who's working on `pricing-revamp`?" it walks to `sarah-chen`, `marcus-lee`, and `priya-shah` and returns their roles. Ask "what does `billing-svc` depend on?" and it walks the `depends_on` edges to the actual services. The vault is no longer just a place I keep notes. It's where my agent looks up the specific facts of my work.
+
+## From personal vault to company brain
+
+The vault doesn't know it's personal. The frontmatter schema, the wikilinks, the typed relationships work the same way for one engineer or two hundred. If `sarah-chen` leaves and `priya-shah` inherits `billing-svc`, the vault sarah maintained is now priya's onboarding doc, her decision archive, and her transcript of every meeting she wasn't in. No migration. The same files.
+
+At one-engineer scale the payoff is personal. Your agent stops needing context dumped at the start of every conversation. At team scale the payoff is different. The vault becomes canonical for who owns what, which decisions are locked, and which questions are still open. "Who do I ask about this" reduces to a query against typed edges.
+
+The skills bundled with the wiki are what keep it from rotting once a team is using it. `wiki-synthesize` walks the co-occurrence matrix across pages and surfaces concepts that show up together often but have no synthesis page linking them. When tier-based pricing, postgres partitioning, and the SLO budget keep appearing in the same notes, the wiki eventually writes its own page tying them together. `impl-validator` runs as a subagent before any vault write, checking that the output matches the stated goal. `wiki-digest` summarizes the week's deltas as a newsletter rather than a git log. `memory-bridge` tracks which AI tool produced which page, so switching from Claude to Codex doesn't drop context.
+
+None of these are speculative. They ship in the same repo as the wiki. The composition is the point: a vault that gets denser and better-cross-linked the more it's used. The opposite of how static documentation behaves.
 
 <QuoteCard
-  author="@nvk"
-  date="May 10, 2026"
-  url="https://x.com/nvk/status/2053314026373775525"
+  author="@shannholmberg"
+  date="May 13, 2026"
+  url="https://x.com/shannholmberg/status/2054542245475578147"
 >
-  <p>
-    seldomly im reminded whats like getting slop from llms without llm-wiki.
-  </p>
+  <p>the org chart for my Hermes Agent company</p>
+  <p class="mt-3">four layers, all isolated docker containers on one vps:</p>
   <p class="mt-3">
-    its a jump akin to using computers pre-internet, great calculator.
+    1. company brain — vision, brand, customers, products. the context every
+    other layer inherits
   </p>
 </QuoteCard>
+
+The shape Karpathy sketched in his LLM Wiki gist is the one every team building this has converged on, and the end state I'm predicting is a company vault that ships to every new hire's laptop on day one. A new engineer joining sarah's team clones the repo and the agent already knows every project priya owns, every service `billing-svc` depends on, every ADR that locked in the current postgres version, every weekly sync that touched `pricing-revamp`. They ask "why did we pick postgres 17?" and the answer comes back with the decision, the meeting it was locked in, and the design doc that argued for it. They ask "who handles the oncall rotation for billing-svc?" and the answer is grounded in the runbook rather than a slack guess. I don't know if Obsidian is the correct medium for this, but the concept will definitely be around.
+
+The current onboarding ritual is three weeks of pinging Slack, grepping old PRs, and asking teammates "is this still how we do it?" That has a clear successor: a typed graph the agent can walk on day one. The hire still reads the code, but the context comes for free with the vault. A few years out, a company without one will read the way a codebase without a README reads today.
+
+---
+
+<sup id="memory-systems">1</sup> The two-system view of memory (procedural vs
+declarative) comes from cognitive neuroscience, formalized by Larry Squire and
+colleagues in the 1980s. The Wikipedia articles on [procedural
+memory](https://en.wikipedia.org/wiki/Procedural_memory) and [explicit
+memory](https://en.wikipedia.org/wiki/Explicit_memory) (where declarative
+redirects) cover each side. The canonical short paper is Squire's [Memory
+systems of the brain](https://pubmed.ncbi.nlm.nih.gov/15464402/) (2004).
