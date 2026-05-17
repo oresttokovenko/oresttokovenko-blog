@@ -109,12 +109,12 @@ Cross-links: [[entities/sarah-chen]] (DRI), [[entities/marcus-lee]] (backend), [
 
 <WikiGraph client:visible />
 
-{/\* Static typst version — kept around in case the interactive graph is overkill.
+{false && (
 
-<div class="my-6 flex justify-center">
-  <Typst code={wikiGraph} />
-</div>
-*/}
+  <div class="my-6 flex justify-center">
+    <Typst code={wikiGraph} />
+  </div>
+)}
 
 {loremIpsum({ count: 4, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
 
