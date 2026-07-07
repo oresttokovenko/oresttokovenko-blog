@@ -5,7 +5,6 @@
     "": {
       "name": "orest-tokovenko-blog",
       "dependencies": {
-        "@astrojs/markdown-remark": "7.2.1",
         "@astrojs/mdx": "7.0.2",
         "@astrojs/react": "6.0.1",
         "@astrojs/rss": "4.0.19",
