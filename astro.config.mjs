@@ -16,6 +16,7 @@ import { transformerObsidian } from "./src/lib/shiki-obsidian.mjs";
 // https://astro.build/config
 export default defineConfig({
   site: "https://oresttokovenko.com",
+  compressHTML: true,
   integrations: [
     mdx(),
     react(),
