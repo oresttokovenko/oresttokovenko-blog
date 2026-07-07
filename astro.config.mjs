@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
 
 import mdx from "@astrojs/mdx";
 
@@ -26,6 +27,7 @@ export default defineConfig({
   ],
 
   markdown: {
+    processor: unified(),
     shikiConfig: {
       transformers: [transformerObsidian()],
     },

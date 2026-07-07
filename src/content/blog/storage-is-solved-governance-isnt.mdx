@@ -1,0 +1,36 @@
+---
+title: "Storage Is Solved. Governance Isn't"
+publishDate: 2026-06-01
+description: "How we federated Databricks Unity Catalog, Snowflake Horizon, and AWS Glue with Iceberg REST — and why the silo was never the storage"
+wip: true
+---
+
+import { Image } from "astro:assets";
+import { loremIpsum } from "lorem-ipsum";
+import merchantClouds from "@/assets/merchant_clouds_rgba.png";
+
+<Image
+  src={merchantClouds}
+  alt="Merchant with clouds"
+  class="mx-auto my-4"
+  style="max-width: 286px;"
+  width={716}
+/>
+
+{loremIpsum({ count: 3, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## The lake was never the silo
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## Three catalogs, one Iceberg
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## Permissions don't speak Iceberg
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
+
+## What we shipped
+
+{loremIpsum({ count: 2, units: "paragraphs" }).split("\n").map((p) => <p>{p}</p>)}
