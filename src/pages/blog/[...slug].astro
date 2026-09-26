@@ -26,7 +26,10 @@ const { Content } = await render(entry);
   description={entry.data.description}
   image={entry.data.ogImage}
 >
-  <div class="flex flex-grow flex-col" style="background-color: rgb(238, 230, 210);">
+  <div
+    class="flex flex-grow flex-col"
+    style="background-color: rgb(238, 230, 210);"
+  >
     <!-- WIP Banner -->
     {entry.data.wip && <WIPBanner />}
 
@@ -65,7 +68,7 @@ const { Content } = await render(entry);
         </header>
 
         <div
-          class="prose prose-base prose-h1:text-xl prose-h2:text-base prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-6 prose-p:my-4 prose-p:leading-relaxed prose-code:font-ibm font-spectral mx-auto mt-4 max-w-none"
+          class="prose-code:font-ibm font-spectral mx-auto prose prose-base mt-4 max-w-none prose-headings:mt-6 prose-headings:mb-4 prose-headings:font-bold prose-h1:text-xl prose-h2:text-base prose-p:my-4 prose-p:leading-relaxed"
         >
           <Content />
         </div>

@@ -82,8 +82,8 @@ export default function BatteryDegradationChart() {
               borderRadius: "4px",
               fontSize: "12px",
             }}
-            formatter={(value: number) => [`${value.toFixed(2)}%`, "Health"]}
-            labelFormatter={(label: number) => `Cycle ${label}`}
+            formatter={(value) => [`${Number(value).toFixed(2)}%`, "Health"]}
+            labelFormatter={(label) => `Cycle ${label}`}
           />
           <ReferenceLine
             y={79}
