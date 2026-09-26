@@ -4,6 +4,7 @@
 
 [build.environment]
   BUN_VERSION = "1.4.2"
+  PUBLIC_CF_BEACON_TOKEN = "15058256076747a0a03c5dadb0bb0d27"
 
 # Cache-control and security headers
 [[headers]]

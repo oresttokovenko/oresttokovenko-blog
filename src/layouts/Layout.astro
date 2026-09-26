@@ -19,6 +19,14 @@ const {
 } = Astro.props;
 
 const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
+
+// Cloudflare Web Analytics: production deploys only, and only when a token is set.
+// CONTEXT is set by Netlify (production | deploy-preview | branch-deploy | dev), so
+// local builds and deploy previews never report.
+const cfBeaconToken =
+  process.env.CONTEXT === "production"
+    ? import.meta.env.PUBLIC_CF_BEACON_TOKEN
+    : undefined;
 ---
 
 <!doctype html>
@@ -64,6 +72,19 @@ const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
     <ClientRouter />
 
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Cloudflare Web Analytics (SPA tracking is automatic) -->
+    {
+      cfBeaconToken && (
+        <script
+          is:inline
+          type="module"
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
+        />
+      )
+    }
+    <!-- End Cloudflare Web Analytics -->
   </head>
   <body
     class="m-0 flex min-h-screen flex-col"
