@@ -23,7 +23,8 @@ const { author, handle, date, url } = Astro.props;
       rel="noopener noreferrer"
       class="hover:underline"
     >
-      {author}{handle && ` (${handle})`}, {date}
+      {author}
+      {handle && ` (${handle})`}, {date}
     </a>
   </figcaption>
 </figure>

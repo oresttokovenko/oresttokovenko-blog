@@ -14,14 +14,12 @@ const currentYear = new Date().getFullYear();
   class={`w-full py-3 px-4 font-mono flex-none ${className}`}
   style="background-color: rgb(238, 230, 210);"
 >
-  <div
-    class="mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-2 md:flex-row"
-  >
+  <div class="mx-auto flex max-w-screen-lg flex-col items-center justify-between gap-2 md:flex-row">
     <p class="text-sm text-gray-600">
       © {currentYear}
-      <a href="/" class="text-gray-600 no-underline hover:text-black"
-        >Orest Tokovenko</a
-      >
+      <a href="/" class="text-gray-600 no-underline hover:text-black">
+        Orest Tokovenko
+      </a>
     </p>
     <nav aria-label="Footer navigation" class="flex gap-4 md:gap-6">
       <NavLink href="/blog" label="Blog" />

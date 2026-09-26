@@ -2,6 +2,7 @@
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "@styles/global.css";
 import Footer from "@components/Footer.astro";
+import AnalyticsBeacon from "@components/AnalyticsBeacon.astro";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -74,16 +75,7 @@ const cfBeaconToken =
     <meta name="generator" content={Astro.generator} />
 
     <!-- Cloudflare Web Analytics (SPA tracking is automatic) -->
-    {
-      cfBeaconToken && (
-        <script
-          is:inline
-          type="module"
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={JSON.stringify({ token: cfBeaconToken })}
-        />
-      )
-    }
+    {cfBeaconToken && <AnalyticsBeacon token={cfBeaconToken} />}
     <!-- End Cloudflare Web Analytics -->
   </head>
   <body

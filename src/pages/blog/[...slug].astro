@@ -41,35 +41,27 @@ const { Content } = await render(entry);
               datetime={entry.data.publishDate.toISOString()}
               class="font-ibm text-sm text-gray-600"
             >
-              {
-                entry.data.publishDate.toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  timeZone: "UTC",
-                })
-              }
+              {entry.data.publishDate.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                timeZone: "UTC",
+              })}
             </time>
           </div>
 
-          <h1
-            class="font-spectral mb-6 text-xl font-bold text-balance text-gray-900 md:text-2xl lg:text-3xl"
-          >
+          <h1 class="font-spectral mb-6 text-xl font-bold text-balance text-gray-900 md:text-2xl lg:text-3xl">
             {entry.data.title}
           </h1>
 
-          {
-            entry.data.description && (
-              <p class="font-spectral mx-auto mt-4 max-w-2xl text-base text-pretty text-gray-700">
-                {entry.data.description}
-              </p>
-            )
-          }
+          {entry.data.description && (
+            <p class="font-spectral mx-auto mt-4 max-w-2xl text-base text-pretty text-gray-700">
+              {entry.data.description}
+            </p>
+          )}
         </header>
 
-        <div
-          class="prose-code:font-ibm font-spectral mx-auto prose prose-base mt-4 max-w-none prose-headings:mt-6 prose-headings:mb-4 prose-headings:font-bold prose-h1:text-xl prose-h2:text-base prose-p:my-4 prose-p:leading-relaxed"
-        >
+        <div class="prose-code:font-ibm font-spectral mx-auto prose prose-base mt-4 max-w-none prose-headings:mt-6 prose-headings:mb-4 prose-headings:font-bold prose-h1:text-xl prose-h2:text-base prose-p:my-4 prose-p:leading-relaxed">
           <Content />
         </div>
 

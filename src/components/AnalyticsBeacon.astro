@@ -1,0 +1,14 @@
+---
+interface Props {
+  token: string;
+}
+
+const { token } = Astro.props;
+---
+
+<script
+  is:inline
+  type="module"
+  src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon={JSON.stringify({ token })}
+></script>
