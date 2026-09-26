@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # bun, not npm: this ecosystem rewrites bun.lock along with package.json, so
+  # a dependency PR can't leave the lockfile stale.
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # TypeScript 7 dropped the compiler API the Astro language server is
+      # built on, so `astro check` fails the moment it loads 7.x. 6.x updates
+      # still come through; majors wait until Astro supports TS 7:
+      # https://github.com/withastro/roadmap/discussions/1321
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
