@@ -5,8 +5,12 @@ updates:
   - package-ecosystem: "bun"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     ignore:
+      # Skip routine patch bumps; security PRs still come through Dependabot
+      # security alerts, which are separate from these version updates:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
       # TypeScript 7 dropped the compiler API the Astro language server is
       # built on, so `astro check` fails the moment it loads 7.x. 6.x updates
       # still come through; majors wait until Astro supports TS 7:
