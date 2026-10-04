@@ -38,7 +38,7 @@
     "@types/bun": "^1.4.2",
     "lorem-ipsum": "^3.0.0",
     "prettier": "^3.8.4",
-    "prettier-plugin-astro": "1.0.1",
+    "prettier-plugin-astro": "1.1.0",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "6"
   }
