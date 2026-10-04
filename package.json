@@ -26,7 +26,7 @@
     "astro": "7.3.5",
     "astro-typst": "^0.12.4",
     "entities": "^8.1.0",
-    "lucide-react": "^1.47.0",
+    "lucide-react": "^1.49.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-force-graph-2d": "^1.29.1",
@@ -37,8 +37,8 @@
     "@tailwindcss/typography": "^0.5.20",
     "@types/bun": "^1.4.2",
     "lorem-ipsum": "^3.0.0",
-    "prettier": "^3.8.4",
-    "prettier-plugin-astro": "1.1.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "1.0.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "6"
   }
